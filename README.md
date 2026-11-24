@@ -3,8 +3,8 @@
 బెల్లంకొండ వారి పెళ్లి సందడి · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta
 
 ## Flow
-1. Embossed envelope with gold wax seal → tap → flaps part with light
-2. Temple doors slowly open into a glowing sanctum → walk through into the light
+1. Temple doors open onto the mandir; walk through the doorway
+2. Scroll: the couple walk up the path to the mandir while the names appear in the sky
 3. Names, shubhalekha, muhurtham countdown, events timeline, rituals, brother's note, hosts
 
 ## Edit content

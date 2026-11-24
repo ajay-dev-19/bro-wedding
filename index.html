@@ -7,155 +7,145 @@
   <meta name="description" content="బెల్లంకొండ వారి పెళ్లి సందడి — Srinivas Teja weds Srilekha, 10 December 2026, Jaggaiahpeta.">
   <meta property="og:title" content="Srinivas Teja weds Srilekha">
   <meta property="og:description" content="You are invited · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta">
-  <meta name="theme-color" content="#1a0609">
+  <meta name="theme-color" content="#1a0905">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Great+Vibes&family=Cinzel:wght@500;600;700&family=Noto+Serif+Telugu:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="./img/envelope.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Great+Vibes&family=Cinzel:wght@400;500;600&family=Noto+Serif+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="./img/temple-door.jpg">
+  <link rel="preload" as="image" href="./img/mandir-couple.jpg">
   <link rel="stylesheet" href="./src/style.css">
 </head>
 <body class="is-locked">
 
-  <!-- ============ INTRO 1 · ENVELOPE ============ -->
-  <div class="intro" id="envelope" aria-label="Wedding invitation">
-    <div class="stage">
-      <div class="env-light" aria-hidden="true"></div>
-      <div class="flap flap-t" aria-hidden="true"><img src="./img/envelope.jpg" alt=""></div>
-      <div class="flap flap-b" aria-hidden="true"><img src="./img/envelope.jpg" alt=""></div>
-      <div class="flap flap-l" aria-hidden="true"><img src="./img/envelope.jpg" alt=""></div>
-      <div class="flap flap-r" aria-hidden="true"><img src="./img/envelope.jpg" alt=""></div>
-      <button class="seal" id="seal" aria-label="Break the seal to open the invitation">
-        <img src="./img/seal.png" alt="">
-        <span>SS</span>
-      </button>
-    </div>
-    <p class="env-hint">Tap the seal to open</p>
-  </div>
-
-  <!-- ============ INTRO 2 · TEMPLE DOORS ============ -->
-  <div class="intro" id="temple" aria-hidden="true">
-    <div class="stage" id="templeStage">
-      <img class="scene" src="./img/temple-door.jpg" alt="">
+  <!-- ============ INTRO · TEMPLE DOORS ============ -->
+  <div class="intro" id="intro">
+    <div class="stage" id="doorStage">
+      <img class="fill" src="./img/temple-door.jpg" alt="">
       <div class="doorway">
-        <div class="sanctum"><img src="./img/sanctum-glow.jpg" alt=""><i class="rays"></i></div>
+        <div class="beyond"><img src="./img/mandir-couple.jpg" alt=""></div>
         <div class="leaf leaf-l"><img src="./img/temple-door.jpg" alt=""></div>
         <div class="leaf leaf-r"><img src="./img/temple-door.jpg" alt=""></div>
+        <i class="seam"></i>
       </div>
-      <i class="diya" style="--x:12%;--y:93%"></i><i class="diya" style="--x:88%;--y:93%"></i>
-      <i class="diya" style="--x:18%;--y:83%"></i><i class="diya" style="--x:82%;--y:83%"></i>
-      <i class="diya" style="--x:22%;--y:76%"></i><i class="diya" style="--x:78%;--y:76%"></i>
+      <i class="diya" style="--x:11%;--y:93%"></i><i class="diya" style="--x:89%;--y:93%"></i>
+      <i class="diya" style="--x:16%;--y:85%"></i><i class="diya" style="--x:84%;--y:85%"></i>
+      <i class="diya" style="--x:20%;--y:77%"></i><i class="diya" style="--x:80%;--y:77%"></i>
     </div>
-    <p class="temple-bless te">శ్రీరస్తు &nbsp;·&nbsp; శుభమస్తు &nbsp;·&nbsp; అవిఘ్నమస్తు</p>
-    <div class="flash" aria-hidden="true"></div>
-    <button class="skip" id="skip">Skip</button>
+    <div class="intro-top">
+      <p class="te">॥ శ్రీరస్తు &nbsp;·&nbsp; శుభమస్తు &nbsp;·&nbsp; అవిఘ్నమస్తు ॥</p>
+    </div>
+    <button class="enter" id="enter"><span class="ring"></span><span class="txt">Tap to open the doors</span></button>
   </div>
 
   <canvas id="dust" aria-hidden="true"></canvas>
 
-  <!-- ============ SITE ============ -->
   <main id="site">
 
-    <section class="hero paper">
-      <div class="arch-frame" aria-hidden="true"></div>
-      <div class="hero-inner">
-        <p class="te om" data-a="up">ॐ &nbsp;॥ శ్రీ గణేశాయ నమః ॥</p>
-        <div class="monogram" data-a="zoom">
-          <svg viewBox="0 0 200 200" aria-hidden="true"><g id="mandala"></g></svg>
-          <b>SS</b>
+    <!-- ============ SCENE 1 · COUPLE WALKS TO THE MANDIR (pinned) ============ -->
+    <section class="walk" id="walk">
+      <div class="walk-pin">
+        <div class="stage" id="walkStage">
+          <img class="fill plate" src="./img/mandir-plate.jpg" alt="A grand mandir at sunrise">
+          <div class="couple"><i class="shadow"></i><img src="./img/couple.png" alt="The bride and groom walking hand in hand towards the mandir"></div>
+          <div class="sunflare" aria-hidden="true"></div>
         </div>
-        <p class="fam te" data-a="up">బెల్లంకొండ వారి<br><span>పెళ్లి సందడి</span></p>
-        <h1 class="names">
-          <span class="nm" data-split>Srinivas Teja</span>
-          <span class="weds" data-a="up">weds</span>
-          <span class="nm" data-split>Srilekha</span>
-        </h1>
-        <div class="hdate" data-a="up">
-          <span class="side">Thursday</span>
-          <span class="d">10<small>December</small></span>
-          <span class="side">2026</span>
+        <div class="sky-shade" aria-hidden="true"></div>
+        <div class="walk-text">
+          <p class="w-fam te">బెల్లంకొండ వారి పెళ్లి సందడి</p>
+          <h1 class="w-names">
+            <span class="w-nm" data-split>Srinivas Teja</span>
+            <span class="w-weds">weds</span>
+            <span class="w-nm" data-split>Srilekha</span>
+          </h1>
+          <p class="w-date">10 · 12 · 2026</p>
         </div>
+        <div class="w-cue" aria-hidden="true"><i></i><span>Scroll to walk with them</span></div>
+        <div class="walk-fade" aria-hidden="true"></div>
       </div>
-      <div class="cue" aria-hidden="true"><i></i>Scroll</div>
     </section>
 
-    <section class="sloka-band">
-      <div class="parallax"><img src="./img/temple-door.jpg" alt=""></div>
-      <div class="sloka-inner">
+    <!-- ============ SCENE 2 · SHUBHALEKHA ============ -->
+    <section class="ivory invite">
+      <div class="arch" aria-hidden="true"><svg viewBox="0 0 400 600" preserveAspectRatio="none"><path class="arch-path" d="M6 600 V230 C6 150 60 110 120 96 C160 86 186 60 200 10 C214 60 240 86 280 96 C340 110 394 150 394 230 V600"/></svg></div>
+      <div class="inv-inner">
+        <p class="om" data-a="up">ॐ</p>
+        <p class="te gan" data-a="up">॥ శ్రీ గణేశాయ నమః ॥</p>
         <p class="te sloka" data-lines>శ్రీ రామపత్నీ, జనకస్య పుత్రీ,
 సీతాంగనా సుందర కోమలాంగీ,
 భూగర్భజాతా, భువనైకమాతా,
 వధూవరాభ్యాం వరదా భవంతు ॥</p>
-      </div>
-    </section>
-
-    <section class="invite paper">
-      <div class="blessrow te" data-a="up"><span>శ్రీరస్తు</span><span>శుభమస్తు</span><span>అవిఘ్నమస్తు</span></div>
-      <h2 class="shub te" data-a="wipe">శుభలేఖ</h2>
-      <p class="label" data-a="up">With the heavenly blessings</p>
-      <p class="hosts" data-a="up">Sri Bellamkonda Babu<br>&amp; Smt. Sujatha</p>
-      <p class="lead" data-a="up">cordially solicit your gracious presence, with family &amp; friends, on the auspicious occasion of the marriage of their elder son</p>
-      <div class="person">
-        <p class="role te" data-a="up">వరుడు</p>
-        <p class="pname" data-split>Srinivas Teja</p>
+        <div class="rule" data-a="draw"></div>
+        <p class="small-cap" data-a="up">With immense joy</p>
+        <p class="hosts" data-a="up">Sri Bellamkonda Babu &amp; Smt. Sujatha</p>
+        <p class="lead" data-a="up">cordially solicit your gracious presence, with family &amp; friends, on the auspicious occasion of the marriage of their elder son</p>
+        <p class="big-name" data-split>Srinivas Teja</p>
         <p class="deg" data-a="up">B.Tech</p>
-      </div>
-      <div class="with" data-a="zoom"><span>with</span></div>
-      <div class="person">
-        <p class="role te" data-a="up">వధువు</p>
-        <p class="pname" data-split>Srilekha</p>
+        <p class="with" data-a="zoom">with</p>
+        <p class="big-name" data-split>Srilekha</p>
         <p class="deg" data-a="up">MBA</p>
-        <p class="bparents" data-a="up">Elder daughter of<br><b>Sri Chintala Komataiah &amp; Smt. Danalakshmi</b><br>Jaggaiahpeta, N.T.R. Dist.</p>
+        <p class="bparents" data-a="up">elder daughter of Sri Chintala Komataiah &amp; Smt. Danalakshmi<br>Jaggaiahpeta, N.T.R. Dist.</p>
       </div>
     </section>
 
-    <section class="muhurtham">
-      <p class="label" data-a="up">సుముహూర్తము</p>
-      <p class="time" data-a="zoom">8:18<small>AM</small></p>
-      <p class="mday" data-a="up">Thursday · 10 December 2026</p>
-      <p class="panch te" data-a="up">శ్రీ పరాభవ నామ సంవత్సర మార్గశిర మాస శుద్ధ విదియ,<br>మూల నక్షత్రయుక్త ధనస్సు లగ్న పుష్కరాంశము నందు</p>
-      <div class="count" data-a="up">
-        <div><b id="cdD">0</b><span>Days</span></div>
-        <div><b id="cdH">0</b><span>Hours</span></div>
-        <div><b id="cdM">0</b><span>Minutes</span></div>
-        <div><b id="cdS">0</b><span>Seconds</span></div>
+    <!-- ============ SCENE 3 · MUHURTHAM (sanctum) ============ -->
+    <section class="muhurtham" id="muhurtham">
+      <div class="m-bg"><img src="./img/sanctum.jpg" alt=""></div>
+      <div class="m-inner">
+        <p class="te m-label" data-a="up">సుముహూర్తము</p>
+        <p class="time" data-a="zoom">8:18<small>AM</small></p>
+        <p class="mday" data-a="up">Thursday · 10 December 2026</p>
+        <p class="panch te" data-a="up">శ్రీ పరాభవ నామ సంవత్సర మార్గశిర మాస శుద్ధ విదియ,<br>మూల నక్షత్రయుక్త ధనస్సు లగ్న పుష్కరాంశము నందు</p>
+        <div class="count" data-a="up">
+          <div><b id="cdD">0</b><span>Days</span></div>
+          <div><b id="cdH">0</b><span>Hours</span></div>
+          <div><b id="cdM">0</b><span>Mins</span></div>
+          <div><b id="cdS">0</b><span>Secs</span></div>
+        </div>
       </div>
     </section>
 
-    <section class="events paper">
-      <p class="label" data-a="up">Mark your calendars</p>
-      <h2 class="title" data-a="wipe">The Celebrations</h2>
-      <div class="timeline" id="timeline"></div>
+    <!-- ============ SCENE 4 · CELEBRATIONS ============ -->
+    <section class="ivory events">
+      <p class="small-cap" data-a="up">Mark your calendars</p>
+      <h2 class="h2" data-a="up">We can't wait to celebrate</h2>
+      <div class="arches" id="arches"></div>
+      <p class="done-note" data-a="up" id="doneNote"></p>
     </section>
 
+    <!-- ============ SCENE 5 · RITUALS (pinned sideways) ============ -->
     <section class="rituals" id="rituals">
       <div class="rit-head">
-        <p class="label" data-a="up">The sacred moments</p>
-        <h2 class="title" data-a="wipe">Kalyanam Rituals</h2>
+        <p class="small-cap" data-a="up">The sacred moments</p>
+        <h2 class="h2" data-a="up">Kalyanam Rituals</h2>
       </div>
       <div class="rit-track" id="ritTrack"></div>
     </section>
 
-    <section class="bro">
-      <p class="label" data-a="up">A little note from the brother</p>
+    <!-- ============ SCENE 6 · BROTHER ============ -->
+    <section class="ivory bro">
+      <p class="small-cap" data-a="up">A little note</p>
       <p class="q te" data-lines>రండి! రారండి!!
 మా అన్నయ్య పెళ్లిని
 సందడి చేద్దాం!</p>
       <p class="who te" data-a="up">— తమ్ముడు : అజయ్ కుమార్</p>
     </section>
 
-    <section class="finale paper">
-      <p class="abhi te" data-a="up"><b>అభిలాష</b><br>చిరునవ్వులు మూటగట్టి, అక్షింతలు చేతబట్టి, కళ్యాణ వేదికను చుట్టుముట్టి, తమ అమృత హస్తాలతో నూతన వధూవరులను ఆశీర్వదించాలని ఆకాంక్షిస్తూ…</p>
-      <p class="label" data-a="up" style="margin-top:44px">ఆహ్వానించువారు</p>
-      <p class="host te" data-a="up">బెల్లంకొండ బాబు<br>శ్రీమతి సుజాత</p>
-      <p class="addr" data-a="up">Teja Car Travels, Rupayi Middhe Centre,<br>Santhi Nagar, Kavali</p>
-      <div class="phones" data-a="up" id="phones"></div>
-      <p class="tiny" data-a="up">Best compliments from Near &amp; Dear<br><span class="te">కార్యనిర్వాహకులు : బంధుమిత్రులు</span></p>
+    <!-- ============ SCENE 7 · FINALE ============ -->
+    <section class="finale">
+      <div class="f-bg"><img src="./img/mandir-couple.jpg" alt=""></div>
+      <div class="f-inner">
+        <p class="te abhi" data-a="up">చిరునవ్వులు మూటగట్టి, అక్షింతలు చేతబట్టి, కళ్యాణ వేదికను చుట్టుముట్టి, తమ అమృత హస్తాలతో నూతన వధూవరులను ఆశీర్వదించాలని ఆకాంక్షిస్తూ…</p>
+        <p class="f-script" data-a="up">with love &amp; blessings</p>
+        <p class="te f-host" data-a="up">బెల్లంకొండ బాబు &nbsp;·&nbsp; శ్రీమతి సుజాత</p>
+        <p class="f-addr" data-a="up">Teja Car Travels, Rupayi Middhe Centre, Santhi Nagar, Kavali</p>
+        <div class="phones" data-a="up" id="phones"></div>
+        <p class="f-tiny" data-a="up">Best compliments from Near &amp; Dear · <span class="te">బంధుమిత్రులు</span></p>
+      </div>
     </section>
   </main>
 
   <button class="music" id="music" aria-label="Play music" hidden>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
   </button>
   <audio id="bgm" src="./audio/music.mp3" preload="none" loop></audio>
 
