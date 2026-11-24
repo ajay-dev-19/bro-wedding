@@ -1,170 +1,275 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { events, rituals, muhurtham, phones } from './data.js';
+import { events, story, quiz, gallery, phones, rsvpTo, muhurtham, couple } from './data.js';
+import { toran, rangoli, diya, lotusRule, kalash } from './art.js';
 
 gsap.registerPlugin(ScrollTrigger);
-
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-/* ------------------------------------------------------------ content */
-const icon = {
+const ico = {
   pin: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>',
   cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   tel: '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg>',
+  wa: '<svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1112 20a8 8 0 01-3.9-1z"/><path d="M9 9c0 3 2 5 5 6l1-1.5-2-1-1 1c-1-.5-1.5-1-2-2l1-1-1-2z"/></svg>',
 };
-const upcoming = events.filter((e) => !e.done);
-const done = events.find((e) => e.done);
-$('#arches').innerHTML = upcoming.map((e) => {
-  const map = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(e.map);
-  const cal = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(`${e.name} · Srinivas Teja & Srilekha`) +
-    `&dates=${e.start}/${e.end}&ctz=Asia/Kolkata&location=` + encodeURIComponent(e.venue);
-  return `<article class="ac${e.main ? ' main' : ''}">
-    <p class="tel">${esc(e.te)}</p><h3>${esc(e.name)}</h3><p class="when">${esc(e.day)}</p>
-    <p class="meta"><b>${esc(e.time)}</b>${e.lunch ? `<br>Lunch ${esc(e.lunch)}` : ''}<br>${esc(e.venue)}</p>
-    <div class="btns"><a class="btn fill" href="${map}" target="_blank" rel="noopener">${icon.pin}Directions</a>
-    <a class="btn" href="${cal}" target="_blank" rel="noopener">${icon.cal}Save date</a></div></article>`;
-}).join('');
-if (done) $('#doneNote').textContent = `${done.name} celebrated on ${done.day.replace(/^\w+, /, '')} — blessed and done.`;
 
-$('#ritGrid').innerHTML = rituals.map((r, i) => `<article class="rit"><div class="pic"><span class="ph">${esc(r[0])}</span><img src="./img/rituals/${esc(r[3])}" alt="${esc(r[1])}" loading="lazy"></div>
-  <p class="n">${String(i + 1).padStart(2, '0')} / ${String(rituals.length).padStart(2, '0')}</p>
-  <h3>${esc(r[0])}</h3><p class="en">${esc(r[1])}</p><p>${esc(r[2])}</p></article>`).join('');
-$$('.rit .pic img').forEach((img) => {
-  const ok = () => img.parentElement.classList.add('has-img');
-  if (img.complete) { if (img.naturalWidth) ok(); else img.remove(); } else { img.addEventListener('load', ok); img.addEventListener('error', () => img.remove()); }
-});
-// background images that may not exist yet fall back to an existing one
-$$('img[data-fallback]').forEach((img) => {
-  const swap = () => { const fb = new URL(img.dataset.fallback, location.href).href; if (img.src !== fb) img.src = fb; };
-  if (img.complete && !img.naturalWidth) swap(); else img.addEventListener('error', swap, { once: true });
-});
-$('#phones').innerHTML = phones.map((p, i) => `<a class="btn${i ? '' : ' fill'}" href="tel:+91${p}">${icon.tel}${p.slice(0, 5)} ${p.slice(5)}</a>`).join('');
+/* =========================================================== render */
+$$('[data-toran]').forEach((el) => { el.innerHTML = toran(innerWidth < 600 ? 11 : 17); });
+$('#rangoli').innerHTML = rangoli();
+$$('[data-kalash]').forEach((el) => { el.innerHTML = kalash(); });
+$$('[data-lotus]').forEach((el) => { el.innerHTML = lotusRule(); });
+$('[data-diyas]').innerHTML = diya() + diya() + diya();
+$$('[data-ico]').forEach((el) => el.insertAdjacentHTML('afterbegin', ico[el.dataset.ico]));
 
-$$('[data-split]').forEach((el) => {
-  el.setAttribute('aria-label', el.textContent);
-  el.innerHTML = [...el.textContent].map((c) => `<span class="ch" aria-hidden="true">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('');
-});
-$$('[data-lines]').forEach((el) => {
-  el.innerHTML = el.textContent.trim().split('\n').map((l) => `<span class="line">${esc(l.trim())}</span>`).join('');
-});
+const gcal = (e) => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(`${e.name} · ${couple.groom} & ${couple.bride}`) +
+  `&dates=${e.start}/${e.end}&ctz=Asia/Kolkata&location=` + encodeURIComponent(e.venue);
+const maps = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 
-/* ------------------------------------------------------------ countdown */
+$('#evList').innerHTML = events.map((e) => `<article class="ev${e.main ? ' main' : ''}" style="--c1:${e.band}">
+  <div class="ev-top"><p class="te">${esc(e.te)}</p></div>
+  <div class="ev-b"><h3>${esc(e.name)}</h3><p class="when">${esc(e.date)}</p>
+    <p class="t">${esc(e.time)}</p><p class="note">${esc(e.note)}</p><p class="v">${esc(e.venue)}</p>
+    <div class="dress"><p class="fam-k">Dress code</p><div class="sw">${e.dress[1].map((c) => `<i style="background:${esc(c)}"></i>`).join('')}</div><p>${esc(e.dress[0])}</p></div>
+    <div class="btns center"><a class="btn fill" href="${maps(e.map)}" target="_blank" rel="noopener">${ico.pin}Directions</a>
+    <a class="btn" href="${gcal(e)}" target="_blank" rel="noopener">${ico.cal}Save date</a></div></div></article>`).join('');
+
+$('#storyLine').innerHTML = '<i class="bar"></i>' + story.map((s, i) => `<li><span class="dot">${i + 1}</span><h3>${esc(s[0])}</h3><p class="d">${esc(s[1])}</p><p>${esc(s[2])}</p></li>`).join('');
+
+$('#jharokhas').innerHTML = gallery.map((g, i) => `<figure class="jh" style="margin:0">${diya('a')}${diya('b')}
+  <div class="jh-frame"><div class="jh-win"><img src="${esc(g[0])}" alt="${esc(g[1])}" loading="lazy" style="object-position:${i % 2 ? '50% 30%' : '50% 60%'}">
+  <i class="shutter l"></i><i class="shutter r"></i></div></div><figcaption class="jh-cap">${esc(g[1])}</figcaption></figure>`).join('');
+
+$('#phones').innerHTML = phones.map(([n, p], i) => `<a class="btn${i ? '' : ' fill'}" href="tel:+91${p}" aria-label="Call ${esc(n)}">${ico.tel}${p.slice(0, 5)} ${p.slice(5)}</a>`).join('');
+
+// calendar: Google per event + one .ics for Apple / Outlook
+const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//bro-wedding//EN',
+  ...events.flatMap((e) => ['BEGIN:VEVENT', `UID:${e.key}@tejawedssrilekha`, `DTSTART;TZID=Asia/Kolkata:${e.start}`, `DTEND;TZID=Asia/Kolkata:${e.end}`,
+    `SUMMARY:${e.name} · ${couple.groom} & ${couple.bride}`, `LOCATION:${e.venue.replace(/,/g, '\\,')}`, 'END:VEVENT']), 'END:VCALENDAR'].join('\r\n');
+$('#calBtns').innerHTML = events.map((e) => `<a class="btn" href="${gcal(e)}" target="_blank" rel="noopener">${ico.cal}${esc(e.name)}</a>`).join('') +
+  `<a class="btn fill" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}" download="teja-srilekha-wedding.ics">${ico.cal}Apple / iCal</a>`;
+
+/* =========================================================== countdown */
 const tick = () => {
   const s = Math.max(0, Math.floor((muhurtham - Date.now()) / 1000));
-  $('#cdD').textContent = Math.floor(s / 86400);
-  $('#cdH').textContent = Math.floor((s % 86400) / 3600);
-  $('#cdM').textContent = Math.floor((s % 3600) / 60);
-  $('#cdS').textContent = s % 60;
+  $('#cdD').textContent = Math.floor(s / 86400); $('#cdH').textContent = Math.floor((s % 86400) / 3600);
+  $('#cdM').textContent = Math.floor((s % 3600) / 60); $('#cdS').textContent = s % 60;
 };
 tick(); setInterval(tick, 1000);
 
-/* ------------------------------------------------------------ gold dust */
-const cv = $('#dust'); const cx = cv.getContext('2d');
-let W, H, dots = [], dustOn = false;
+/* =========================================================== petals */
+const cv = $('#petals'); const cx = cv.getContext('2d');
+let W = 0, H = 0, petals = [], running = false, ambient = 0;
+const COL = ['#f4b41a', '#e8891d', '#f29a1f', '#c8252c', '#e0457b', '#ffd25a'];
 const size = () => { const r = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * r; cv.height = H * r; cx.setTransform(r, 0, 0, r, 0, 0); };
-const mk = (y) => ({ x: Math.random() * W, y: y ?? H + 10, r: 0.5 + Math.random() * 1.6, v: 0.12 + Math.random() * 0.4, w: Math.random() * 6.3, a: 0.2 + Math.random() * 0.5 });
-const draw = () => {
-  if (!dustOn) return;
+const mk = (burst) => ({
+  x: burst ? W / 2 + (Math.random() - 0.5) * W * 0.5 : Math.random() * W, y: burst ? H * 0.45 : -20,
+  vx: burst ? (Math.random() - 0.5) * 9 : (Math.random() - 0.5) * 0.6, vy: burst ? -Math.random() * 9 - 2 : 0.6 + Math.random() * 0.9,
+  r: 5 + Math.random() * 7, a: Math.random() * 6.3, va: (Math.random() - 0.5) * 0.08, f: Math.random() * 6.3, c: COL[Math.floor(Math.random() * COL.length)], burst,
+});
+const frame = () => {
+  if (!running) return;
   cx.clearRect(0, 0, W, H);
-  for (const d of dots) {
-    d.y -= d.v; d.w += 0.015; d.x += Math.sin(d.w) * 0.3;
-    if (d.y < -10) Object.assign(d, mk());
-    const g = cx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.r * 4);
-    g.addColorStop(0, `rgba(255,236,170,${d.a})`); g.addColorStop(1, 'rgba(255,236,170,0)');
-    cx.fillStyle = g; cx.beginPath(); cx.arc(d.x, d.y, d.r * 4, 0, 6.29); cx.fill();
+  petals = petals.filter((p) => p.y < H + 30);
+  while (petals.filter((p) => !p.burst).length < ambient) petals.push(mk(false));
+  for (const p of petals) {
+    if (p.burst) { p.vy += 0.18; p.vx *= 0.99; if (p.vy > 2) p.vy = 2; }
+    p.f += 0.03; p.x += p.vx + Math.sin(p.f) * 0.5; p.y += p.vy; p.a += p.va;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.a); cx.scale(1, Math.abs(Math.cos(p.f)) * 0.7 + 0.3);
+    cx.fillStyle = p.c; cx.beginPath(); cx.ellipse(0, 0, p.r, p.r * 0.55, 0, 0, 6.29); cx.fill();
+    cx.fillStyle = 'rgba(255,255,255,.25)'; cx.beginPath(); cx.ellipse(-p.r * 0.3, -p.r * 0.1, p.r * 0.4, p.r * 0.18, 0, 0, 6.29); cx.fill();
+    cx.restore();
   }
-  requestAnimationFrame(draw);
+  requestAnimationFrame(frame);
 };
-const startDust = () => { if (reduce || dustOn) return; size(); dots = Array.from({ length: Math.min(50, Math.round(W / 10)) }, () => mk(Math.random() * H)); dustOn = true; draw(); };
-addEventListener('resize', () => dustOn && size());
+const startPetals = () => { if (reduce || running) return; size(); running = true; frame(); };
+const burst = (n = 90) => { if (reduce) return; startPetals(); for (let i = 0; i < n; i++) petals.push(mk(true)); };
+addEventListener('resize', () => running && size());
+document.addEventListener('visibilitychange', () => { if (document.hidden) running = false; else if (!reduce && petals.length) { running = true; frame(); } });
 
-/* ------------------------------------------------------------ music (optional: public/audio/music.mp3) */
+/* =========================================================== music */
 const bgm = $('#bgm'); const mBtn = $('#music');
 let hasMusic = false;
 fetch(bgm.src, { method: 'HEAD' }).then((r) => { hasMusic = r.ok && (r.headers.get('content-type') || '').includes('audio'); }).catch(() => {});
 const setOn = (on) => { mBtn.classList.toggle('on', on); mBtn.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); };
-const playMusic = () => { if (!hasMusic) return; mBtn.hidden = false; bgm.volume = 0.6; bgm.play().then(() => setOn(true)).catch(() => setOn(false)); };
-mBtn.addEventListener('click', () => { if (bgm.paused) { bgm.play().then(() => setOn(true)).catch(() => {}); } else { bgm.pause(); setOn(false); } });
+const playMusic = () => { if (!hasMusic) return; mBtn.hidden = false; bgm.volume = 0.55; bgm.play().then(() => setOn(true)).catch(() => setOn(false)); };
+mBtn.addEventListener('click', () => { if (bgm.paused) bgm.play().then(() => setOn(true)).catch(() => {}); else { bgm.pause(); setOn(false); } });
 
-/* ------------------------------------------------------------ intro: temple doors */
-gsap.set(['.stage'], { xPercent: -50, yPercent: -50, x: 0, y: 0 });
-gsap.set('.enter', { xPercent: -50, x: 0 });
+/* =========================================================== knock to open */
+gsap.set('.stage', { xPercent: -50, yPercent: -50, x: 0, y: 0 });
 const intro = $('#intro');
-$$('.diya').forEach((d) => gsap.to(d, { opacity: () => 0.5 + Math.random() * 0.5, scale: () => 0.9 + Math.random() * 0.25, duration: () => 0.12 + Math.random() * 0.2,
-  repeat: -1, yoyo: true, repeatRefresh: true, ease: 'none' }));
+$$('.diya-glow').forEach((d) => gsap.to(d, { opacity: () => 0.5 + Math.random() * 0.5, scale: () => 0.9 + Math.random() * 0.25, duration: () => 0.12 + Math.random() * 0.2, repeat: -1, yoyo: true, repeatRefresh: true, ease: 'none' }));
 gsap.timeline()
-  .from('#doorStage', { scale: 1.1, duration: 3.5, ease: 'power2.out' })
-  .from('.intro-top', { autoAlpha: 0, y: -16, duration: 1.2 }, 0.6)
-  .from('.enter', { autoAlpha: 0, y: 20, duration: 1 }, 1.2);
+  .from('#doorStage', { scale: 1.12, duration: 3.6, ease: 'power2.out' })
+  .from('.intro-top', { autoAlpha: 0, y: -16, duration: 1.2 }, 0.5)
+  .from('.knock-ui > *', { autoAlpha: 0, y: 16, stagger: 0.15, duration: 0.9 }, 1.1);
+// idle hint: the doors breathe until knocked
+const hint = gsap.to('.leaf-l, .leaf-r', { x: (i) => (i ? 1.5 : -1.5), duration: 0.12, repeat: 5, yoyo: true, repeatDelay: 0, delay: 3, ease: 'none', paused: reduce });
+const hintLoop = setInterval(() => !reduce && hint.restart(true), 4200);
 
-let opened = false;
-const reveal = () => {
+let actx = null;
+const thud = () => {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime;
+    const o = actx.createOscillator(); const g = actx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.18);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.35);
+    const len = actx.sampleRate * 0.06; const buf = actx.createBuffer(1, len, actx.sampleRate); const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    const n = actx.createBufferSource(); const ng = actx.createGain(); const lp = actx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 900; ng.gain.value = 0.5; n.buffer = buf; n.connect(lp).connect(ng).connect(actx.destination); n.start(t);
+  } catch (e) { /* sound is optional */ }
+};
+
+let knocks = 0; let opened = false;
+$('#knock').addEventListener('click', (ev) => {
+  if (opened) return;
+  knocks++; thud();
+  if (navigator.vibrate) navigator.vibrate(30);
+  clearInterval(hintLoop); hint.kill();
+  $$('.knock-dots i')[knocks - 1]?.classList.add('on');
+  const ring = document.createElement('i'); ring.className = 'knock-ring';
+  const x = ev.clientX || innerWidth / 2; const y = ev.clientY || innerHeight / 2;
+  ring.style.left = x + 'px'; ring.style.top = y + 'px'; intro.appendChild(ring);
+  gsap.fromTo(ring, { scale: 0.3, opacity: 1 }, { scale: 2.2, opacity: 0, duration: 0.7, ease: 'power2.out', onComplete: () => ring.remove() });
+  gsap.fromTo('#doorStage', { scale: 1.012 }, { scale: 1, duration: 0.35, ease: 'power2.out' });
+  gsap.fromTo('.leaf-l', { x: -3 }, { x: 0, duration: 0.4, ease: 'elastic.out(1, .3)' });
+  gsap.fromTo('.leaf-r', { x: 3 }, { x: 0, duration: 0.4, ease: 'elastic.out(1, .3)' });
+  if (knocks >= 3) openDoors();
+});
+
+function openDoors() {
+  opened = true; playMusic();
+  $('#welcome').textContent = 'స్వాగతం · Welcome';
+  if (reduce) { revealSite(); return; }
+  gsap.timeline({ onComplete: revealSite })
+    .to('.knock-ui', { autoAlpha: 0, y: 12, duration: 0.5 }, 0.2)
+    .to('#welcome', { opacity: 1, y: -10, duration: 1, ease: 'power2.out' }, 0.3)
+    .to('.seam', { opacity: 1, duration: 0.6 }, 0.5)
+    .to('.leaf-l', { rotateY: -100, duration: 3.4, ease: 'power2.inOut' }, 0.9)
+    .to('.leaf-r', { rotateY: 100, duration: 3.4, ease: 'power2.inOut' }, 0.9)
+    .to('.seam', { opacity: 0, duration: 0.8 }, 1.6)
+    .call(() => burst(110), null, 1.5)
+    .fromTo('.beyond img', { scale: 1.25, filter: 'brightness(1.6)' }, { scale: 1, filter: 'brightness(1)', duration: 3.8, ease: 'power2.out' }, 0.9)
+    .to(['#welcome', '.intro-top'], { autoAlpha: 0, duration: 0.7 }, 3.4)
+    .to('#doorStage', { scale: 2.45, transformOrigin: '50% 53%', duration: 2.1, ease: 'power3.inOut' }, 3.5);
+}
+
+function revealSite() {
   document.body.classList.remove('is-locked');
-  startDust();
+  startPetals(); ambient = innerWidth < 600 ? 10 : 18;
   ScrollTrigger.refresh();
   const t = gsap.timeline();
-  t.from('#sceneStage', { scale: 1.1165, duration: 2.6, ease: 'power2.inOut' }, 0)
-    .to(intro, { autoAlpha: 0, duration: 0.45, ease: 'power1.out', onComplete: () => intro.remove() }, 0)
-    .to('#sceneStage', { scale: 1.06, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 2.6);
-  if (!reduce) {
-    t.from('.w-fam', { autoAlpha: 0, y: 18, filter: 'blur(8px)', duration: 1.4, ease: 'power2.out' }, 0.8)
-      .from('.w-names .w-nm:first-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.07, duration: 1.2, ease: 'power3.out' }, 1.6)
-      .from('.w-weds', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.2 }, 2.6)
-      .from('.w-names .w-nm:last-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.07, duration: 1.2, ease: 'power3.out' }, 3.0)
-      .from('.w-date', { autoAlpha: 0, y: 20, filter: 'blur(8px)', duration: 1.2 }, 4.0)
-      .from('.w-cue', { autoAlpha: 0, duration: 1 }, 4.8);
-  }
-};
-const openDoors = () => {
-  if (opened) return; opened = true;
-  playMusic();
-  if (reduce) { reveal(); return; }
-  gsap.timeline({ onComplete: reveal })
-    .to('.enter', { autoAlpha: 0, y: 10, duration: 0.5 }, 0)
-    .to('.seam', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.1)
-    .to('.leaf-l', { rotateY: -100, duration: 3.6, ease: 'power2.inOut' }, 0.6)
-    .to('.leaf-r', { rotateY: 100, duration: 3.6, ease: 'power2.inOut' }, 0.6)
-    .to('.seam', { opacity: 0, duration: 0.8 }, 1.4)
-    .fromTo('.beyond img', { scale: 1.25, filter: 'brightness(1.6)' }, { scale: 1, filter: 'brightness(1)', duration: 4, ease: 'power2.out' }, 0.6)
-    .to('.intro-top', { autoAlpha: 0, duration: 0.8 }, 3.2)
-    // step through the doorway
-    .to('#doorStage', { scale: 2.45, transformOrigin: '50% 53%', duration: 2.2, ease: 'power3.inOut' }, 3.4);
-};
-$('#enter').addEventListener('click', openDoors);
+  t.from('#heroStage', { scale: 1.1165, duration: 2.6, ease: 'power2.inOut' }, 0)
+    .to(intro, { autoAlpha: 0, duration: 0.45, onComplete: () => intro.remove() }, 0)
+    .to('#heroStage', { scale: 1.06, duration: 16, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 2.6);
+  if (reduce) return;
+  t.from('.hero .toran', { yPercent: -100, duration: 1.4, ease: 'back.out(1.4)' }, 0.6)
+    .from('.h-gan, .h-inv', { autoAlpha: 0, y: 24, filter: 'blur(8px)', stagger: 0.25, duration: 1.2, ease: 'power3.out' }, 0.9)
+    .from('.nm', { clipPath: 'inset(0 100% 0 0)', duration: 1.6, stagger: 0.7, ease: 'power2.inOut' }, 1.6)
+    .from('.amp', { autoAlpha: 0, scale: 0.5, duration: 0.8 }, 2.2)
+    .from('.h-date, .h-venue, .h-tag', { autoAlpha: 0, y: 20, filter: 'blur(6px)', stagger: 0.2, duration: 1 }, 3.2)
+    .from('.cue', { autoAlpha: 0, duration: 1 }, 4);
+}
 
-/* ------------------------------------------------------------ scroll reveals */
+/* =========================================================== scroll animation */
 if (!reduce) {
   const st = (el, start = 'top 86%') => ({ trigger: el, start });
-  $$('main [data-a]').forEach((el) => {
-    const k = el.dataset.a;
-    if (k === 'draw') { gsap.from(el, { scaleX: 0, duration: 1.4, ease: 'power3.inOut', scrollTrigger: st(el) }); return; }
-    const from = k === 'zoom' ? { autoAlpha: 0, scale: 0.7, filter: 'blur(10px)' } : { autoAlpha: 0, y: 36, filter: 'blur(8px)' };
-    gsap.from(el, { ...from, duration: 1.3, ease: 'power3.out', scrollTrigger: st(el) });
-  });
-  $$('.invite [data-split]').forEach((el) => {
-    gsap.from($$('.ch', el), { autoAlpha: 0, y: 50, filter: 'blur(10px)', duration: 1.2, stagger: 0.06, ease: 'power3.out', scrollTrigger: st(el) });
-  });
+  $$('[data-r]').forEach((el) => gsap.from(el, { autoAlpha: 0, y: 40, filter: 'blur(8px)', duration: 1.25, ease: 'power3.out', scrollTrigger: st(el) }));
   $$('[data-lines]').forEach((el) => {
-    gsap.from($$('.line', el), { autoAlpha: 0, y: 26, filter: 'blur(10px)', duration: 1.3, stagger: 0.4, ease: 'power2.out', scrollTrigger: st(el, 'top 82%') });
+    el.innerHTML = el.textContent.trim().split('\n').map((l) => `<span class="line">${esc(l.trim())}</span>`).join('');
+    gsap.from($$('.line', el), { autoAlpha: 0, y: 20, filter: 'blur(8px)', stagger: 0.4, duration: 1.2, scrollTrigger: st(el) });
   });
-  // the arch draws itself
-  const arch = $('.arch-path');
-  const len = 2000; arch.style.strokeDasharray = len; arch.style.strokeDashoffset = len;
-  gsap.to(arch, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: '.invite', start: 'top 70%', end: 'center center', scrub: 1 } });
-  // sanctum parallax + glowing time
-  gsap.fromTo('.m-bg img', { yPercent: -8, scale: 1.12 }, { yPercent: 8, scale: 1, ease: 'none', scrollTrigger: { trigger: '.muhurtham', start: 'top bottom', end: 'bottom top', scrub: true } });
-  // arched event cards rise one after another
-  gsap.from('.ac', { autoAlpha: 0, y: 80, scale: 0.94, filter: 'blur(8px)', duration: 1.3, stagger: 0.22, ease: 'power3.out', scrollTrigger: st('#arches', 'top 82%') });
-  // ritual cards rise in, their pictures settle from a slight zoom
-  $$('.rit').forEach((card) => {
-    gsap.from(card, { autoAlpha: 0, y: 70, filter: 'blur(8px)', duration: 1.2, ease: 'power3.out', scrollTrigger: st(card, 'top 90%') });
-    gsap.to(card.querySelector('.pic img'), { scale: 1, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'center center', scrub: true } });
+  // hero text drifts up and fades as you leave
+  gsap.to('.hero-in', { y: -80, autoAlpha: 0, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom 35%', scrub: true } });
+  // rangoli blooms ring by ring, then turns slowly
+  const rg = $('#rangoli');
+  gsap.from($$('.rg-p', rg), { scale: 0, transformOrigin: '50% 50%', opacity: 0, duration: 0.7, ease: 'back.out(2)', stagger: { each: 0.012, from: 'end' }, scrollTrigger: st('[data-rangoli]', 'top 80%') });
+  gsap.from('.rg-date', { autoAlpha: 0, scale: 0.6, duration: 1, delay: 0.6, ease: 'back.out(1.6)', scrollTrigger: st('[data-rangoli]', 'top 80%') });
+  gsap.to('.rg-spin', { rotate: 360, duration: 90, ease: 'none', repeat: -1 });
+  // invitation card unfolds
+  gsap.from('.card-in', { y: 120, rotateX: 14, transformPerspective: 1200, autoAlpha: 0, duration: 1.6, ease: 'power3.out', scrollTrigger: st('.vivaham', 'top 75%') });
+  gsap.from('.kalash', { y: -40, autoAlpha: 0, duration: 1.2, ease: 'bounce.out', scrollTrigger: st('.card-in', 'top 70%') });
+  // events cards rise one by one
+  gsap.from('.ev', { y: 90, autoAlpha: 0, rotate: (i) => (i - 1) * 3, duration: 1.3, stagger: 0.2, ease: 'power3.out', scrollTrigger: st('#evList', 'top 82%') });
+  // story line draws as you read
+  gsap.from('.story-line .bar', { scaleY: 0, ease: 'none', scrollTrigger: { trigger: '.story-line', start: 'top 70%', end: 'bottom 60%', scrub: true } });
+  $$('.story-line li').forEach((li) => {
+    gsap.from(li.querySelector('.dot'), { scale: 0, duration: 0.6, ease: 'back.out(2.5)', scrollTrigger: st(li, 'top 80%') });
+    gsap.from($$('h3, p', li), { x: 30, autoAlpha: 0, stagger: 0.12, duration: 1, ease: 'power3.out', scrollTrigger: st(li, 'top 80%') });
   });
-  // fade the mandir title out as you leave the first scene
-  gsap.to('.walk-text, .w-cue', { autoAlpha: 0, y: -40, ease: 'none', scrollTrigger: { trigger: '#scene1', start: 'top top', end: 'bottom 30%', scrub: true } });
-  // finale: slow push into the Seetha Rama Kalyanam scene
-  gsap.fromTo('.f-bg img', { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.finale', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+  // jharokha shutters swing open
+  $$('.jh').forEach((jh) => {
+    const tl = gsap.timeline({ scrollTrigger: st(jh, 'top 72%') });
+    tl.from(jh, { y: 60, autoAlpha: 0, duration: 1, ease: 'power3.out' })
+      .to(jh.querySelector('.shutter.l'), { rotateY: -110, duration: 1.6, ease: 'power3.inOut' }, 0.5)
+      .to(jh.querySelector('.shutter.r'), { rotateY: 110, duration: 1.6, ease: 'power3.inOut' }, 0.5)
+      .fromTo(jh.querySelector('img'), { scale: 1.3 }, { scale: 1, duration: 2.4, ease: 'power2.out' }, 0.5);
+  });
+  // a little petal shower when the RSVP form appears
+  ScrollTrigger.create({ trigger: '#rsvp', start: 'top 60%', once: true, onEnter: () => burst(50) });
+} else {
+  $$('.shutter').forEach((s) => { s.style.display = 'none'; });
 }
+
+/* =========================================================== quiz */
+const box = $('#quizBox');
+const SIDES = { groom: ['పెళ్లికొడుకు వైపు', "Teja's side"], bride: ['పెళ్లికూతురు వైపు', "Srilekha's side"] };
+let side = null; let qi = 0; let score = 0;
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } } };
+const quizStart = () => {
+  const last = store.get('tws-quiz');
+  box.innerHTML = `<p class="fam-k">Choose your side</p><div class="side-pick">
+    ${Object.entries(SIDES).map(([k, v]) => `<button class="side" data-side="${k}"><span class="te">${v[0]}</span>${v[1]}</button>`).join('')}</div>
+    ${last ? `<p class="qmsg" style="margin-top:18px">Your last score: ${esc(last)}</p>` : '<p class="qmsg" style="margin-top:18px">Be the first in your family to play.</p>'}`;
+  $$('.side', box).forEach((b) => b.addEventListener('click', () => { side = b.dataset.side; qi = 0; score = 0; ask(); }));
+};
+const ask = () => {
+  const [q, opts, ans] = quiz[qi];
+  box.innerHTML = `<div class="qprog">${quiz.map((_, i) => `<i class="${i < qi ? 'done' : ''}"></i>`).join('')}</div>
+    <p class="qq">${esc(q)}</p><div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
+  gsap.from(box.children, { autoAlpha: 0, y: 14, stagger: 0.08, duration: 0.5 });
+  $$('.opt', box).forEach((b) => b.addEventListener('click', () => {
+    const i = +b.dataset.i;
+    $$('.opt', box).forEach((x) => { x.disabled = true; });
+    $$('.opt', box)[ans].classList.add('right');
+    if (i === ans) score++; else b.classList.add('wrong');
+    setTimeout(() => { qi++; if (qi < quiz.length) ask(); else done(); }, 900);
+  }));
+};
+const done = () => {
+  const s = `${score}/${quiz.length} for ${SIDES[side][1]}`;
+  store.set('tws-quiz', s);
+  const msg = score === quiz.length ? 'Perfect! You clearly read the shubhalekha twice.' : score >= 5 ? 'So close — you know them well!' : score >= 3 ? 'Not bad! Scroll up and try again.' : 'Looks like you need to meet the couple more often!';
+  const share = `https://wa.me/?text=${encodeURIComponent(`I scored ${score}/${quiz.length} for ${SIDES[side][1]} in the Teja & Srilekha wedding quiz! ${couple.hashtag}\n${location.href.split('#')[0]}`)}`;
+  box.innerHTML = `<p class="fam-k">${esc(SIDES[side][1])}</p><p class="qscore">${score}<span style="font-size:.45em">/${quiz.length}</span></p><p class="qmsg">${msg}</p>
+    <div class="btns center"><a class="btn fill" href="${share}" target="_blank" rel="noopener">${ico.wa}Challenge the other side</a><button class="btn" id="again">Play again</button></div>`;
+  gsap.from(box.children, { autoAlpha: 0, scale: 0.9, stagger: 0.1, duration: 0.6, ease: 'back.out(2)' });
+  if (score >= 5) burst(60);
+  $('#again').addEventListener('click', quizStart);
+};
+quizStart();
+
+/* =========================================================== RSVP */
+let guests = 2;
+const setG = (n) => { guests = Math.min(6, Math.max(1, n)); $('#rCount').textContent = guests; };
+$('#minus').addEventListener('click', () => setG(guests - 1));
+$('#plus').addEventListener('click', () => setG(guests + 1));
+$$('input[name="att"]').forEach((r) => r.addEventListener('change', () => { $('#countFld').style.display = r.value === 'no' && r.checked ? 'none' : ''; }));
+$('#rsvpForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('#rName').value.trim();
+  if (!name) { $('#rErr').textContent = 'Please add your name.'; $('#rName').focus(); return; }
+  $('#rErr').textContent = '';
+  const yes = $('input[name="att"]:checked').value === 'yes';
+  const lines = [`🙏 RSVP — ${couple.groom} & ${couple.bride}`, `Name: ${name}`, yes ? `Attending: Yes, ${guests} ${guests > 1 ? 'guests' : 'guest'}` : 'Attending: Sorry, can’t make it — sending blessings'];
+  const ph = $('#rPhone').value.trim(); if (ph) lines.push(`Phone: ${ph}`);
+  const note = $('#rNote').value.trim(); if (note) lines.push(`Note: ${note}`);
+  const url = `https://wa.me/${rsvpTo}?text=${encodeURIComponent(lines.join('\n'))}`;
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+  const d = $('#rDone'); d.hidden = false; d.innerHTML = `Thank you! If WhatsApp didn’t open, <a href="${url}" target="_blank" rel="noopener" style="color:inherit">tap here to send</a>.`;
+  burst(70);
+});

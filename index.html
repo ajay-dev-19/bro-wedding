@@ -4,136 +4,199 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Srinivas Teja weds Srilekha · 10.12.2026</title>
-  <meta name="description" content="బెల్లంకొండ వారి పెళ్లి సందడి — Srinivas Teja weds Srilekha, 10 December 2026, Jaggaiahpeta.">
+  <meta name="description" content="బెల్లంకొండ వారి పెళ్లి సందడి — Srinivas Teja weds Srilekha · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta. Knock on the door to enter.">
   <meta property="og:title" content="Srinivas Teja weds Srilekha">
-  <meta property="og:description" content="You are invited · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta">
-  <meta name="theme-color" content="#1a0905">
+  <meta property="og:description" content="Knock on the door — you're invited · 10 December 2026 · Jaggaiahpeta">
+  <meta property="og:image" content="./img/temple-door.jpg">
+  <meta name="theme-color" content="#2a0c06">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Great+Vibes&family=Cinzel:wght@400;500;600&family=Noto+Serif+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pinyon+Script&family=Marcellus&family=Tiro+Telugu&family=Noto+Serif+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="./img/temple-door.jpg">
   <link rel="preload" as="image" href="./img/mandir-couple.jpg">
   <link rel="stylesheet" href="./src/style.css">
 </head>
 <body class="is-locked">
 
-  <!-- ============ INTRO · TEMPLE DOORS ============ -->
-  <div class="intro" id="intro">
-    <div class="stage" id="doorStage">
-      <img class="fill" src="./img/temple-door.jpg" alt="">
-      <div class="doorway">
-        <div class="beyond"><img src="./img/mandir-couple.jpg" alt=""></div>
-        <div class="leaf leaf-l"><img src="./img/temple-door.jpg" alt=""></div>
-        <div class="leaf leaf-r"><img src="./img/temple-door.jpg" alt=""></div>
-        <i class="seam"></i>
-      </div>
-      <i class="diya" style="--x:11%;--y:93%"></i><i class="diya" style="--x:89%;--y:93%"></i>
-      <i class="diya" style="--x:16%;--y:85%"></i><i class="diya" style="--x:84%;--y:85%"></i>
-      <i class="diya" style="--x:20%;--y:77%"></i><i class="diya" style="--x:80%;--y:77%"></i>
+<!-- ======================= KNOCK TO OPEN ======================= -->
+<div class="intro" id="intro">
+  <div class="stage" id="doorStage">
+    <img class="fill" src="./img/temple-door.jpg" alt="">
+    <div class="doorway">
+      <div class="beyond"><img src="./img/mandir-couple.jpg" alt=""></div>
+      <div class="leaf leaf-l"><img src="./img/temple-door.jpg" alt=""></div>
+      <div class="leaf leaf-r"><img src="./img/temple-door.jpg" alt=""></div>
+      <i class="seam"></i>
     </div>
-    <div class="intro-top">
-      <p class="te">॥ శ్రీరస్తు &nbsp;·&nbsp; శుభమస్తు &nbsp;·&nbsp; అవిఘ్నమస్తు ॥</p>
-    </div>
-    <button class="enter" id="enter"><span class="ring"></span><span class="txt">Tap to open the doors</span></button>
+    <i class="diya-glow" style="--x:11%;--y:93%"></i><i class="diya-glow" style="--x:89%;--y:93%"></i>
+    <i class="diya-glow" style="--x:16%;--y:85%"></i><i class="diya-glow" style="--x:84%;--y:85%"></i>
+    <i class="diya-glow" style="--x:20%;--y:77%"></i><i class="diya-glow" style="--x:80%;--y:77%"></i>
   </div>
+  <div class="intro-top"><p class="te">॥ శ్రీరస్తు · శుభమస్తు · అవిఘ్నమస్తు ॥</p></div>
+  <div class="knock-ui" id="knockUi">
+    <p class="knock-te te">తలుపు తట్టండి</p>
+    <p class="knock-en">Knock three times to enter</p>
+    <div class="knock-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+  </div>
+  <button class="knock-hit" id="knock" aria-label="Knock on the door (three times to open)"></button>
+  <p class="welcome te" id="welcome" aria-live="polite"></p>
+</div>
 
-  <canvas id="dust" aria-hidden="true"></canvas>
+<canvas id="petals" aria-hidden="true"></canvas>
 
-  <main id="site">
+<main id="site">
 
-    <!-- ============ SCENE 1 · THE MANDIR ============ -->
-    <section class="scene1" id="scene1">
-      <div class="stage" id="sceneStage">
-        <img class="fill" src="./img/mandir-couple.jpg" alt="The bride and groom walking hand in hand towards the mandir at sunrise">
-        <div class="sunflare" aria-hidden="true"></div>
+  <!-- ======================= HERO ======================= -->
+  <section class="hero" id="top">
+    <div class="stage" id="heroStage"><img class="fill" src="./img/mandir-couple.jpg" alt="The bride and groom walking hand in hand towards the mandir at sunrise"></div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="toran" data-toran></div>
+    <div class="hero-in">
+      <p class="te h-gan" data-h>॥ శ్రీ గణేశాయ నమః ॥</p>
+      <p class="h-inv" data-h>with the blessings of our elders, the Bellamkonda family invites you to the wedding of</p>
+      <h1 class="h-names" data-h>
+        <span class="script nm">Srinivas Teja</span>
+        <span class="amp">&amp;</span>
+        <span class="script nm">Srilekha</span>
+      </h1>
+      <p class="h-date" data-h>Thursday · 10 December 2026</p>
+      <p class="h-venue" data-h>Ukku Kala Vedika · Jaggaiahpeta</p>
+      <p class="h-tag te" data-h>రెండు కుటుంబాలు · ఒకే శుభారంభం</p>
+    </div>
+    <a class="cue" href="#savedate" aria-label="Scroll down"><i></i><span>Scroll</span></a>
+  </section>
+
+  <!-- ======================= SAVE THE DATE ======================= -->
+  <section class="paper savedate" id="savedate">
+    <p class="te kicker" data-r>శుభ ముహూర్తం</p>
+    <h2 class="h2" data-r>Save the date</h2>
+    <div class="rangoli-wrap" data-rangoli>
+      <div class="rangoli" id="rangoli"></div>
+      <div class="rg-date"><span class="rg-d">10</span><span class="rg-m">December</span><span class="rg-y">2026</span></div>
+    </div>
+    <p class="sd-time" data-r>Thursday · Sumuhurtham <b>8:18 AM</b></p>
+    <p class="te sd-panch" data-r>శ్రీ పరాభవ నామ సంవత్సర మార్గశిర శుద్ధ విదియ · మూల నక్షత్రయుక్త ధనస్సు లగ్నం</p>
+    <div class="count" data-r>
+      <div><b id="cdD">0</b><span>days</span></div><div><b id="cdH">0</b><span>hours</span></div>
+      <div><b id="cdM">0</b><span>minutes</span></div><div><b id="cdS">0</b><span>seconds</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= SHUBHA VIVAHAM ======================= -->
+  <section class="vivaham" id="invite">
+    <div class="papercut" aria-hidden="true"></div>
+    <div class="card-in">
+      <div data-kalash></div>
+      <h2 class="te viv-h" data-r>శుభ వివాహం</h2>
+      <p class="te viv-sloka" data-lines>శ్రీ రామపత్నీ, జనకస్య పుత్రీ, సీతాంగనా సుందర కోమలాంగీ,
+భూగర్భజాతా, భువనైకమాతా, వధూవరాభ్యాం వరదా భవంతు ॥</p>
+      <div data-lotus></div>
+      <p class="viv-p" data-r>We cordially solicit your gracious presence, with family &amp; friends, on the auspicious occasion of the marriage of our elder son</p>
+      <p class="script viv-name" data-r>Chi. Srinivas Teja <small>B.Tech</small></p>
+      <p class="viv-with" data-r>with</p>
+      <p class="script viv-name" data-r>Chi.La.Sow. Srilekha <small>MBA</small></p>
+      <div class="families">
+        <div data-r><p class="fam-k">Groom's parents</p><p class="fam-n">Sri Bellamkonda Babu<br>&amp; Smt. Sujatha</p><p class="fam-p">Santhi Nagar, Kavali</p></div>
+        <div data-r><p class="fam-k">Bride's parents</p><p class="fam-n">Sri Chintala Komataiah<br>&amp; Smt. Danalakshmi</p><p class="fam-p">Jaggaiahpeta, N.T.R. Dist.</p></div>
       </div>
-      <div class="sky-shade" aria-hidden="true"></div>
-      <div class="walk-text">
-        <p class="w-fam te">బెల్లంకొండ వారి పెళ్లి సందడి</p>
-        <h1 class="w-names">
-          <span class="w-nm" data-split>Srinivas Teja</span>
-          <span class="w-weds">weds</span>
-          <span class="w-nm" data-split>Srilekha</span>
-        </h1>
-        <p class="w-date">10 · 12 · 2026</p>
+    </div>
+  </section>
+
+  <!-- ======================= EVENTS ======================= -->
+  <section class="paper events" id="events">
+    <p class="te kicker" data-r>వేడుకలు</p>
+    <h2 class="h2" data-r>Our events</h2>
+    <div class="ev-list" id="evList"></div>
+  </section>
+
+  <!-- ======================= STORY ======================= -->
+  <section class="story" id="story">
+    <p class="te kicker light" data-r>మా కథ</p>
+    <h2 class="h2 light" data-r>Our story</h2>
+    <ol class="story-line" id="storyLine"></ol>
+  </section>
+
+  <!-- ======================= QUIZ ======================= -->
+  <section class="paper quiz" id="quiz">
+    <p class="te kicker" data-r>ఎంత బాగా తెలుసు?</p>
+    <h2 class="h2" data-r>Pelli Koduku side vs Pelli Kuthuru side</h2>
+    <p class="quiz-sub" data-r>Seven quick questions. Pick your side and prove who knows the couple best.</p>
+    <div class="quiz-box" id="quizBox" data-r></div>
+  </section>
+
+  <!-- ======================= GALLERY ======================= -->
+  <section class="gallery" id="gallery">
+    <div class="toran" data-toran></div>
+    <p class="te kicker light" data-r>జ్ఞాపకాలు</p>
+    <h2 class="h2 light" data-r>Moments</h2>
+    <div class="jharokhas" id="jharokhas"></div>
+    <p class="hashtag" data-r>#TejaWedsSrilekha</p>
+  </section>
+
+  <!-- ======================= VENUE ======================= -->
+  <section class="paper venue" id="venue">
+    <p class="te kicker" data-r>కళ్యాణ వేదిక</p>
+    <h2 class="h2" data-r>Ukku Kala Vedika</h2>
+    <p class="venue-addr" data-r>Near RTC Bus Stand, Jaggaiahpeta, N.T.R. District, Andhra Pradesh</p>
+    <div class="btns center" data-r>
+      <a class="btn fill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Ukku%20Kala%20Vedika%2C%20Jaggaiahpeta" data-ico="pin">Open in Maps</a>
+    </div>
+    <div class="info-grid">
+      <article class="info" data-r><h3>Getting there</h3><p>Vijayawada (Gannavaram) Airport is about 100 km away, roughly 1 hr 15 min by road. Vijayawada railway station is about 80 km. The venue is right by the Jaggaiahpeta RTC bus stand.</p></article>
+      <article class="info" data-r><h3>Haldi &amp; Vratham</h3><p>Both are at home in Santhi Nagar, Kavali (Sai Nr Heavens Apartment), with lunch at 12:30 PM after each.</p></article>
+      <article class="info" data-r><h3>Stay</h3><p>Coming from out of town? Call the family and we'll arrange your stay.</p></article>
+    </div>
+  </section>
+
+  <!-- ======================= RSVP ======================= -->
+  <section class="rsvp" id="rsvp">
+    <p class="te kicker light" data-r>మీ రాక మాకు ఆనందం</p>
+    <h2 class="h2 light" data-r>Will you join us?</h2>
+    <form class="rsvp-form" id="rsvpForm" data-r novalidate>
+      <div class="seg" role="radiogroup" aria-label="Attending?">
+        <label><input type="radio" name="att" value="yes" checked><span>Joyfully attending</span></label>
+        <label><input type="radio" name="att" value="no"><span>Will bless from afar</span></label>
       </div>
-      <div class="w-cue" aria-hidden="true"><i></i><span>Scroll</span></div>
-    </section>
+      <label class="fld"><span>Your name</span><input id="rName" name="name" autocomplete="name" required></label>
+      <label class="fld"><span>Phone <em>(optional)</em></span><input id="rPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"></label>
+      <label class="fld" id="countFld"><span>Guests</span>
+        <div class="stepper"><button type="button" id="minus" aria-label="Fewer guests">−</button><output id="rCount">2</output><button type="button" id="plus" aria-label="More guests">+</button></div>
+      </label>
+      <label class="fld"><span>A note for the couple <em>(optional)</em></span><textarea id="rNote" rows="3"></textarea></label>
+      <p class="err" id="rErr" role="alert"></p>
+      <button class="btn gold big" type="submit">Send on WhatsApp</button>
+      <p class="rsvp-done" id="rDone" hidden>Thank you! WhatsApp should open with your reply ready to send.</p>
+    </form>
+  </section>
 
-    <!-- ============ SCENE 2 · SHUBHALEKHA ============ -->
-    <section class="ivory invite">
-      <div class="arch" aria-hidden="true"><svg viewBox="0 0 400 600" preserveAspectRatio="none"><path class="arch-path" d="M6 600 V230 C6 150 60 110 120 96 C160 86 186 60 200 10 C214 60 240 86 280 96 C340 110 394 150 394 230 V600"/></svg></div>
-      <div class="inv-inner">
-        <p class="om" data-a="up">ॐ</p>
-        <p class="te gan" data-a="up">॥ శ్రీ గణేశాయ నమః ॥</p>
-        <p class="te sloka" data-lines>శ్రీ రామపత్నీ, జనకస్య పుత్రీ,
-సీతాంగనా సుందర కోమలాంగీ,
-భూగర్భజాతా, భువనైకమాతా,
-వధూవరాభ్యాం వరదా భవంతు ॥</p>
-        <div class="rule" data-a="draw"></div>
-        <p class="small-cap" data-a="up">With immense joy</p>
-        <p class="hosts" data-a="up">Sri Bellamkonda Babu &amp; Smt. Sujatha</p>
-        <p class="lead" data-a="up">cordially solicit your gracious presence, with family &amp; friends, on the auspicious occasion of the marriage of their elder son</p>
-        <p class="big-name" data-split>Srinivas Teja</p>
-        <p class="deg" data-a="up">B.Tech</p>
-        <p class="with" data-a="zoom">with</p>
-        <p class="big-name" data-split>Srilekha</p>
-        <p class="deg" data-a="up">MBA</p>
-        <p class="bparents" data-a="up">elder daughter of Sri Chintala Komataiah &amp; Smt. Danalakshmi<br>Jaggaiahpeta, N.T.R. Dist.</p>
-      </div>
-    </section>
+  <!-- ======================= CONTACT + FOOTER ======================= -->
+  <section class="paper contact" id="contact">
+    <div data-kalash></div>
+    <p class="te kicker" data-r>ఆహ్వానించువారు</p>
+    <h2 class="h2" data-r>Bellamkonda Babu &amp; Sujatha</h2>
+    <p class="contact-addr" data-r>Teja Car Travels, Rupayi Middhe Centre, Santhi Nagar, Kavali</p>
+    <div class="btns center" id="phones" data-r></div>
+    <p class="te abhi" data-r>చిరునవ్వులు మూటగట్టి, అక్షింతలు చేతబట్టి, కళ్యాణ వేదికను చుట్టుముట్టి, తమ అమృత హస్తాలతో నూతన వధూవరులను ఆశీర్వదించాలని ఆకాంక్షిస్తూ…</p>
+    <div class="cal" data-r>
+      <p class="fam-k">Add to calendar</p>
+      <div class="btns center" id="calBtns"></div>
+    </div>
+  </section>
 
-    <!-- ============ SCENE 3 · MUHURTHAM (sanctum) ============ -->
-    <section class="muhurtham" id="muhurtham">
-      <div class="m-bg"><img src="./img/thali-kattu.jpg" data-fallback="./img/sanctum.jpg" alt=""></div>
-      <div class="m-inner">
-        <p class="te m-label" data-a="up">సుముహూర్తము</p>
-        <p class="time" data-a="zoom">8:18<small>AM</small></p>
-        <p class="mday" data-a="up">Thursday · 10 December 2026</p>
-        <p class="panch te" data-a="up">శ్రీ పరాభవ నామ సంవత్సర మార్గశిర మాస శుద్ధ విదియ,<br>మూల నక్షత్రయుక్త ధనస్సు లగ్న పుష్కరాంశము నందు</p>
-        <div class="count" data-a="up">
-          <div><b id="cdD">0</b><span>Days</span></div>
-          <div><b id="cdH">0</b><span>Hours</span></div>
-          <div><b id="cdM">0</b><span>Mins</span></div>
-          <div><b id="cdS">0</b><span>Secs</span></div>
-        </div>
-      </div>
-    </section>
+  <footer class="foot">
+    <div class="diyas" data-diyas></div>
+    <p class="script foot-n">Teja &amp; Srilekha</p>
+    <p class="foot-s">10 · 12 · 2026 · Jaggaiahpeta</p>
+    <p class="foot-c">Best compliments from Near &amp; Dear · <span class="te">బంధుమిత్రులు</span></p>
+    <a class="top" href="#top">Back to top ↑</a>
+  </footer>
+</main>
 
-    <!-- ============ SCENE 4 · CELEBRATIONS ============ -->
-    <section class="ivory events">
-      <p class="small-cap" data-a="up">Mark your calendars</p>
-      <h2 class="h2" data-a="up">We can't wait to celebrate</h2>
-      <div class="arches" id="arches"></div>
-      <p class="done-note" data-a="up" id="doneNote"></p>
-    </section>
+<button class="music" id="music" aria-label="Play music" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+</button>
+<audio id="bgm" src="./audio/music.mp3" preload="none" loop></audio>
 
-    <!-- ============ SCENE 5 · RITUALS (pinned sideways) ============ -->
-    <section class="ivory rituals" id="rituals">
-      <p class="small-cap" data-a="up">The sacred moments</p>
-      <h2 class="h2" data-a="up">Kalyanam Rituals</h2>
-      <div class="rit-grid" id="ritGrid"></div>
-    </section>
-
-    <!-- ============ SCENE 7 · FINALE ============ -->
-    <section class="finale">
-      <div class="f-bg"><img src="./img/sita-rama-kalyanam.jpg" data-fallback="./img/mandir-couple.jpg" alt="Seetha Rama Kalyanam"></div>
-      <div class="f-inner">
-        <p class="te abhi" data-a="up">చిరునవ్వులు మూటగట్టి, అక్షింతలు చేతబట్టి, కళ్యాణ వేదికను చుట్టుముట్టి, తమ అమృత హస్తాలతో నూతన వధూవరులను ఆశీర్వదించాలని ఆకాంక్షిస్తూ…</p>
-        <p class="f-script" data-a="up">with love &amp; blessings</p>
-        <p class="te f-host" data-a="up">బెల్లంకొండ బాబు &nbsp;·&nbsp; శ్రీమతి సుజాత</p>
-        <p class="f-addr" data-a="up">Teja Car Travels, Rupayi Middhe Centre, Santhi Nagar, Kavali</p>
-        <div class="phones" data-a="up" id="phones"></div>
-        <p class="f-tiny" data-a="up">Best compliments from Near &amp; Dear · <span class="te">బంధుమిత్రులు</span></p>
-      </div>
-    </section>
-  </main>
-
-  <button class="music" id="music" aria-label="Play music" hidden>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-  </button>
-  <audio id="bgm" src="./audio/music.mp3" preload="none" loop></audio>
-
-  <script type="module" src="./src/main.js"></script>
+<script type="module" src="./src/main.js"></script>
 </body>
 </html>
