@@ -1,7 +1,9 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { events, story, quiz, gallery, phones, rsvpTo, muhurtham, couple } from './data.js';
-import { toran, rangoli, diya, lotusRule, kalash } from './art.js';
+import { events, story, gallery, phones, rsvpTo, muhurtham, couple } from './data.js';
+import { toran, diya, lotusRule, kalash } from './art.js';
+import { createPetals } from './petals.js';
+import { mountRangoli } from './rangoli.js';
 
 gsap.registerPlugin(ScrollTrigger);
 const $ = (s, r = document) => r.querySelector(s);
@@ -17,7 +19,7 @@ const ico = {
 
 /* =========================================================== render */
 $$('[data-toran]').forEach((el) => { el.innerHTML = toran(innerWidth < 600 ? 11 : 17); });
-$('#rangoli').innerHTML = rangoli();
+$('[data-rgdiyas]').innerHTML = [[50, 2], [98, 50], [50, 98], [2, 50]].map(([x, y]) => diya().replace('class="diya-svg "', `class="diya-svg" style="left:${x}%;top:${y}%"`)).join('');
 $$('[data-kalash]').forEach((el) => { el.innerHTML = kalash(); });
 $$('[data-lotus]').forEach((el) => { el.innerHTML = lotusRule(); });
 $('[data-diyas]').innerHTML = diya() + diya() + diya();
@@ -31,7 +33,6 @@ $('#evList').innerHTML = events.map((e) => `<article class="ev${e.main ? ' main'
   <div class="ev-top"><p class="te">${esc(e.te)}</p></div>
   <div class="ev-b"><h3>${esc(e.name)}</h3><p class="when">${esc(e.date)}</p>
     <p class="t">${esc(e.time)}</p><p class="note">${esc(e.note)}</p><p class="v">${esc(e.venue)}</p>
-    <div class="dress"><p class="fam-k">Dress code</p><div class="sw">${e.dress[1].map((c) => `<i style="background:${esc(c)}"></i>`).join('')}</div><p>${esc(e.dress[0])}</p></div>
     <div class="btns center"><a class="btn fill" href="${maps(e.map)}" target="_blank" rel="noopener">${ico.pin}Directions</a>
     <a class="btn" href="${gcal(e)}" target="_blank" rel="noopener">${ico.cal}Save date</a></div></div></article>`).join('');
 
@@ -50,6 +51,25 @@ const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//bro-wedding//EN',
 $('#calBtns').innerHTML = events.map((e) => `<a class="btn" href="${gcal(e)}" target="_blank" rel="noopener">${ico.cal}${esc(e.name)}</a>`).join('') +
   `<a class="btn fill" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}" download="teja-srilekha-wedding.ics">${ico.cal}Apple / iCal</a>`;
 
+const rangoli = mountRangoli($('#rangoli'), { reduce });
+
+/* toran: every strand is a little pendulum; scrolling gives them a push */
+const strands = $$('.strand').map((g) => {
+  const o = `${g.dataset.x} ${g.dataset.y}`;
+  const amp = 1.4 + Math.random() * 1.8; const dur = 2.2 + Math.random() * 1.6;
+  if (!reduce) gsap.fromTo(g, { rotation: -amp, svgOrigin: o }, { rotation: amp, svgOrigin: o, duration: dur, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: -Math.random() * dur });
+  return g;
+});
+if (!reduce) {
+  const push = $$('.toran-svg');
+  const settle = gsap.delayedCall(0.18, () => gsap.to(push, { skewX: 0, duration: 2.2, ease: 'elastic.out(1, .28)', overwrite: true })).pause();
+  ScrollTrigger.create({ onUpdate: (self) => {
+    const k = Math.max(-5, Math.min(5, self.getVelocity() / -400));
+    gsap.to(push, { skewX: k, transformOrigin: '50% 0%', duration: 0.6, ease: 'power2.out', overwrite: true });
+    settle.restart(true);
+  } });
+}
+
 /* =========================================================== countdown */
 const tick = () => {
   const s = Math.max(0, Math.floor((muhurtham - Date.now()) / 1000));
@@ -59,34 +79,11 @@ const tick = () => {
 tick(); setInterval(tick, 1000);
 
 /* =========================================================== petals */
-const cv = $('#petals'); const cx = cv.getContext('2d');
-let W = 0, H = 0, petals = [], running = false, ambient = 0;
-const COL = ['#f4b41a', '#e8891d', '#f29a1f', '#c8252c', '#e0457b', '#ffd25a'];
-const size = () => { const r = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * r; cv.height = H * r; cx.setTransform(r, 0, 0, r, 0, 0); };
-const mk = (burst) => ({
-  x: burst ? W / 2 + (Math.random() - 0.5) * W * 0.5 : Math.random() * W, y: burst ? H * 0.45 : -20,
-  vx: burst ? (Math.random() - 0.5) * 9 : (Math.random() - 0.5) * 0.6, vy: burst ? -Math.random() * 9 - 2 : 0.6 + Math.random() * 0.9,
-  r: 5 + Math.random() * 7, a: Math.random() * 6.3, va: (Math.random() - 0.5) * 0.08, f: Math.random() * 6.3, c: COL[Math.floor(Math.random() * COL.length)], burst,
-});
-const frame = () => {
-  if (!running) return;
-  cx.clearRect(0, 0, W, H);
-  petals = petals.filter((p) => p.y < H + 30);
-  while (petals.filter((p) => !p.burst).length < ambient) petals.push(mk(false));
-  for (const p of petals) {
-    if (p.burst) { p.vy += 0.18; p.vx *= 0.99; if (p.vy > 2) p.vy = 2; }
-    p.f += 0.03; p.x += p.vx + Math.sin(p.f) * 0.5; p.y += p.vy; p.a += p.va;
-    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.a); cx.scale(1, Math.abs(Math.cos(p.f)) * 0.7 + 0.3);
-    cx.fillStyle = p.c; cx.beginPath(); cx.ellipse(0, 0, p.r, p.r * 0.55, 0, 0, 6.29); cx.fill();
-    cx.fillStyle = 'rgba(255,255,255,.25)'; cx.beginPath(); cx.ellipse(-p.r * 0.3, -p.r * 0.1, p.r * 0.4, p.r * 0.18, 0, 0, 6.29); cx.fill();
-    cx.restore();
-  }
-  requestAnimationFrame(frame);
-};
-const startPetals = () => { if (reduce || running) return; size(); running = true; frame(); };
-const burst = (n = 90) => { if (reduce) return; startPetals(); for (let i = 0; i < n; i++) petals.push(mk(true)); };
-addEventListener('resize', () => running && size());
-document.addEventListener('visibilitychange', () => { if (document.hidden) running = false; else if (!reduce && petals.length) { running = true; frame(); } });
+const petals = createPetals($('#petals'), { reduce });
+const burst = (n) => petals.shower(n, 2.2);
+const startPetals = () => petals.start();
+let lastY = scrollY;
+addEventListener('scroll', () => { const d = scrollY - lastY; lastY = scrollY; if (Math.abs(d) > 30) petals.gust(Math.sign(d) * Math.min(30, Math.abs(d) * 0.3)); }, { passive: true });
 
 /* =========================================================== music */
 const bgm = $('#bgm'); const mBtn = $('#music');
@@ -124,55 +121,59 @@ const thud = () => {
   } catch (e) { /* sound is optional */ }
 };
 
-let knocks = 0; let opened = false;
+let opened = false;
 $('#knock').addEventListener('click', (ev) => {
   if (opened) return;
-  knocks++; thud();
-  if (navigator.vibrate) navigator.vibrate(30);
+  thud(); if (navigator.vibrate) navigator.vibrate(25);
   clearInterval(hintLoop); hint.kill();
-  $$('.knock-dots i')[knocks - 1]?.classList.add('on');
   const ring = document.createElement('i'); ring.className = 'knock-ring';
-  const x = ev.clientX || innerWidth / 2; const y = ev.clientY || innerHeight / 2;
-  ring.style.left = x + 'px'; ring.style.top = y + 'px'; intro.appendChild(ring);
-  gsap.fromTo(ring, { scale: 0.3, opacity: 1 }, { scale: 2.2, opacity: 0, duration: 0.7, ease: 'power2.out', onComplete: () => ring.remove() });
-  gsap.fromTo('#doorStage', { scale: 1.012 }, { scale: 1, duration: 0.35, ease: 'power2.out' });
-  gsap.fromTo('.leaf-l', { x: -3 }, { x: 0, duration: 0.4, ease: 'elastic.out(1, .3)' });
-  gsap.fromTo('.leaf-r', { x: 3 }, { x: 0, duration: 0.4, ease: 'elastic.out(1, .3)' });
-  if (knocks >= 3) openDoors();
+  ring.style.left = (ev.clientX || innerWidth / 2) + 'px'; ring.style.top = (ev.clientY || innerHeight / 2) + 'px'; intro.appendChild(ring);
+  gsap.fromTo(ring, { scale: 0.3, opacity: 1 }, { scale: 2.2, opacity: 0, duration: 0.8, ease: 'power2.out', onComplete: () => ring.remove() });
+  openDoors();
 });
 
 function openDoors() {
   opened = true; playMusic();
   $('#welcome').textContent = 'స్వాగతం · Welcome';
-  if (reduce) { revealSite(); return; }
-  gsap.timeline({ onComplete: revealSite })
-    .to('.knock-ui', { autoAlpha: 0, y: 12, duration: 0.5 }, 0.2)
-    .to('#welcome', { opacity: 1, y: -10, duration: 1, ease: 'power2.out' }, 0.3)
-    .to('.seam', { opacity: 1, duration: 0.6 }, 0.5)
-    .to('.leaf-l', { rotateY: -100, duration: 3.4, ease: 'power2.inOut' }, 0.9)
-    .to('.leaf-r', { rotateY: 100, duration: 3.4, ease: 'power2.inOut' }, 0.9)
-    .to('.seam', { opacity: 0, duration: 0.8 }, 1.6)
-    .call(() => burst(110), null, 1.5)
-    .fromTo('.beyond img', { scale: 1.25, filter: 'brightness(1.6)' }, { scale: 1, filter: 'brightness(1)', duration: 3.8, ease: 'power2.out' }, 0.9)
-    .to(['#welcome', '.intro-top'], { autoAlpha: 0, duration: 0.7 }, 3.4)
-    .to('#doorStage', { scale: 2.45, transformOrigin: '50% 53%', duration: 2.1, ease: 'power3.inOut' }, 3.5);
+  if (reduce) { handoff(); return; }
+  gsap.timeline({ onComplete: handoff })
+    .to('.knock-ui', { autoAlpha: 0, y: 12, duration: 0.6 }, 0)
+    .to('#welcome', { opacity: 1, y: -10, duration: 1.2, ease: 'power2.out' }, 0.2)
+    .to('.seam', { opacity: 1, duration: 0.6 }, 0.3)
+    .to('.leaf-l', { rotateY: -100, duration: 3.4, ease: 'power2.inOut' }, 0.7)
+    .to('.leaf-r', { rotateY: 100, duration: 3.4, ease: 'power2.inOut' }, 0.7)
+    .to('.seam', { opacity: 0, duration: 0.8 }, 1.4)
+    .call(() => burst(36), null, 1.6)
+    .fromTo('.beyond img', { filter: 'brightness(1.6)' }, { filter: 'brightness(1)', duration: 3.6, ease: 'power2.out' }, 0.7)
+    .to(['#welcome', '.intro-top'], { autoAlpha: 0, duration: 0.8 }, 3.2)
+    .to('#doorStage', { scale: 2.45, transformOrigin: '50% 53%', duration: 2.4, ease: 'power2.inOut' }, 3.3);
 }
 
-function revealSite() {
+// Place the hero image exactly where the picture in the doorway is, then cross over with no jump.
+function handoff() {
+  scrollTo(0, 0);
+  const r = $('.beyond').getBoundingClientRect();
+  const s = Math.max(r.width / 1080, r.height / 1920); const imgW = 1080 * s;
+  const hero = $('#heroStage'); const hr = $('.hero').getBoundingClientRect();
+  const stageW = hero.offsetWidth; const k = imgW / stageW;
+  const dx = (r.left + r.width / 2) - (hr.left + hr.width / 2); const dy = (r.top + r.height / 2) - (hr.top + hr.height / 2);
+  gsap.set(hero, { scale: k, x: dx, y: dy });
+  gsap.set('.hero-shade', { opacity: 0 });
   document.body.classList.remove('is-locked');
-  startPetals(); ambient = innerWidth < 600 ? 10 : 18;
+  petals.ambient(innerWidth < 600 ? 9 : 16);
   ScrollTrigger.refresh();
   const t = gsap.timeline();
-  t.from('#heroStage', { scale: 1.1165, duration: 2.6, ease: 'power2.inOut' }, 0)
-    .to(intro, { autoAlpha: 0, duration: 0.45, onComplete: () => intro.remove() }, 0)
-    .to('#heroStage', { scale: 1.06, duration: 16, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 2.6);
+  t.to(intro, { autoAlpha: 0, duration: 0.6, ease: 'none', onComplete: () => intro.remove() }, 0)
+    .to(hero, { scale: 1, x: 0, y: 0, duration: 2.4, ease: 'power2.inOut' }, 0)
+    .to('.hero-shade', { opacity: 1, duration: 2, ease: 'power1.inOut' }, 0.6)
+    .to(hero, { scale: 1.05, duration: 18, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 2.4);
   if (reduce) return;
-  t.from('.hero .toran', { yPercent: -100, duration: 1.4, ease: 'back.out(1.4)' }, 0.6)
-    .from('.h-gan, .h-inv', { autoAlpha: 0, y: 24, filter: 'blur(8px)', stagger: 0.25, duration: 1.2, ease: 'power3.out' }, 0.9)
-    .from('.nm', { clipPath: 'inset(0 100% 0 0)', duration: 1.6, stagger: 0.7, ease: 'power2.inOut' }, 1.6)
-    .from('.amp', { autoAlpha: 0, scale: 0.5, duration: 0.8 }, 2.2)
-    .from('.h-date, .h-venue, .h-tag', { autoAlpha: 0, y: 20, filter: 'blur(6px)', stagger: 0.2, duration: 1 }, 3.2)
-    .from('.cue', { autoAlpha: 0, duration: 1 }, 4);
+  t.from('.hero .toran', { yPercent: -110, duration: 2, ease: 'power3.out' }, 1.2)
+    .from('.h-gan, .h-inv', { autoAlpha: 0, y: 24, filter: 'blur(8px)', stagger: 0.3, duration: 1.4, ease: 'power3.out' }, 1.6)
+    .from('.nm', { clipPath: 'inset(0 100% 0 0)', duration: 1.8, stagger: 0.8, ease: 'power2.inOut' }, 2.3)
+    .from('.amp', { autoAlpha: 0, duration: 1 }, 3.0)
+    .from('.h-date, .h-venue, .h-tag', { autoAlpha: 0, y: 20, filter: 'blur(6px)', stagger: 0.22, duration: 1.2 }, 4.0)
+    .from('.cue', { autoAlpha: 0, duration: 1.2 }, 5);
 }
 
 /* =========================================================== scroll animation */
@@ -185,11 +186,10 @@ if (!reduce) {
   });
   // hero text drifts up and fades as you leave
   gsap.to('.hero-in', { y: -80, autoAlpha: 0, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom 35%', scrub: true } });
-  // rangoli blooms ring by ring, then turns slowly
-  const rg = $('#rangoli');
-  gsap.from($$('.rg-p', rg), { scale: 0, transformOrigin: '50% 50%', opacity: 0, duration: 0.7, ease: 'back.out(2)', stagger: { each: 0.012, from: 'end' }, scrollTrigger: st('[data-rangoli]', 'top 80%') });
-  gsap.from('.rg-date', { autoAlpha: 0, scale: 0.6, duration: 1, delay: 0.6, ease: 'back.out(1.6)', scrollTrigger: st('[data-rangoli]', 'top 80%') });
-  gsap.to('.rg-spin', { rotate: 360, duration: 90, ease: 'none', repeat: -1 });
+  // rangoli is poured grain by grain when it comes into view
+  ScrollTrigger.create({ trigger: '[data-rangoli]', start: 'top 75%', once: true, onEnter: () => rangoli.draw() });
+  gsap.from('.rg-date', { autoAlpha: 0, scale: 0.85, duration: 1.4, delay: 3.6, ease: 'power2.out', scrollTrigger: st('[data-rangoli]', 'top 75%') });
+  gsap.from('.rg-diyas .diya-svg', { autoAlpha: 0, duration: 0.8, stagger: 0.25, delay: 4.6, scrollTrigger: st('[data-rangoli]', 'top 75%') });
   // invitation card unfolds
   gsap.from('.card-in', { y: 120, rotateX: 14, transformPerspective: 1200, autoAlpha: 0, duration: 1.6, ease: 'power3.out', scrollTrigger: st('.vivaham', 'top 75%') });
   gsap.from('.kalash', { y: -40, autoAlpha: 0, duration: 1.2, ease: 'bounce.out', scrollTrigger: st('.card-in', 'top 70%') });
@@ -210,48 +210,10 @@ if (!reduce) {
       .fromTo(jh.querySelector('img'), { scale: 1.3 }, { scale: 1, duration: 2.4, ease: 'power2.out' }, 0.5);
   });
   // a little petal shower when the RSVP form appears
-  ScrollTrigger.create({ trigger: '#rsvp', start: 'top 60%', once: true, onEnter: () => burst(50) });
 } else {
   $$('.shutter').forEach((s) => { s.style.display = 'none'; });
+  rangoli.still();
 }
-
-/* =========================================================== quiz */
-const box = $('#quizBox');
-const SIDES = { groom: ['పెళ్లికొడుకు వైపు', "Teja's side"], bride: ['పెళ్లికూతురు వైపు', "Srilekha's side"] };
-let side = null; let qi = 0; let score = 0;
-const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } } };
-const quizStart = () => {
-  const last = store.get('tws-quiz');
-  box.innerHTML = `<p class="fam-k">Choose your side</p><div class="side-pick">
-    ${Object.entries(SIDES).map(([k, v]) => `<button class="side" data-side="${k}"><span class="te">${v[0]}</span>${v[1]}</button>`).join('')}</div>
-    ${last ? `<p class="qmsg" style="margin-top:18px">Your last score: ${esc(last)}</p>` : '<p class="qmsg" style="margin-top:18px">Be the first in your family to play.</p>'}`;
-  $$('.side', box).forEach((b) => b.addEventListener('click', () => { side = b.dataset.side; qi = 0; score = 0; ask(); }));
-};
-const ask = () => {
-  const [q, opts, ans] = quiz[qi];
-  box.innerHTML = `<div class="qprog">${quiz.map((_, i) => `<i class="${i < qi ? 'done' : ''}"></i>`).join('')}</div>
-    <p class="qq">${esc(q)}</p><div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
-  gsap.from(box.children, { autoAlpha: 0, y: 14, stagger: 0.08, duration: 0.5 });
-  $$('.opt', box).forEach((b) => b.addEventListener('click', () => {
-    const i = +b.dataset.i;
-    $$('.opt', box).forEach((x) => { x.disabled = true; });
-    $$('.opt', box)[ans].classList.add('right');
-    if (i === ans) score++; else b.classList.add('wrong');
-    setTimeout(() => { qi++; if (qi < quiz.length) ask(); else done(); }, 900);
-  }));
-};
-const done = () => {
-  const s = `${score}/${quiz.length} for ${SIDES[side][1]}`;
-  store.set('tws-quiz', s);
-  const msg = score === quiz.length ? 'Perfect! You clearly read the shubhalekha twice.' : score >= 5 ? 'So close — you know them well!' : score >= 3 ? 'Not bad! Scroll up and try again.' : 'Looks like you need to meet the couple more often!';
-  const share = `https://wa.me/?text=${encodeURIComponent(`I scored ${score}/${quiz.length} for ${SIDES[side][1]} in the Teja & Srilekha wedding quiz! ${couple.hashtag}\n${location.href.split('#')[0]}`)}`;
-  box.innerHTML = `<p class="fam-k">${esc(SIDES[side][1])}</p><p class="qscore">${score}<span style="font-size:.45em">/${quiz.length}</span></p><p class="qmsg">${msg}</p>
-    <div class="btns center"><a class="btn fill" href="${share}" target="_blank" rel="noopener">${ico.wa}Challenge the other side</a><button class="btn" id="again">Play again</button></div>`;
-  gsap.from(box.children, { autoAlpha: 0, scale: 0.9, stagger: 0.1, duration: 0.6, ease: 'back.out(2)' });
-  if (score >= 5) burst(60);
-  $('#again').addEventListener('click', quizStart);
-};
-quizStart();
 
 /* =========================================================== RSVP */
 let guests = 2;
@@ -271,5 +233,5 @@ $('#rsvpForm').addEventListener('submit', (e) => {
   const url = `https://wa.me/${rsvpTo}?text=${encodeURIComponent(lines.join('\n'))}`;
   const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
   const d = $('#rDone'); d.hidden = false; d.innerHTML = `Thank you! If WhatsApp didn’t open, <a href="${url}" target="_blank" rel="noopener" style="color:inherit">tap here to send</a>.`;
-  burst(70);
+  burst(30);
 });

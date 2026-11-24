@@ -1,30 +1,51 @@
 // Hand-built SVG decorations: toran, rangoli, diya, lotus divider, kalash.
 
 export function toran(n = 13) {
+  // realistic marigold + mango-leaf toran; strands swing on their own (see main.js)
   const w = 1000; const step = w / (n - 1);
-  let s = `<svg class="toran-svg" viewBox="0 0 ${w} 150" preserveAspectRatio="none" aria-hidden="true">
-  <path d="M0 14 Q${w / 2} 44 ${w} 14" fill="none" stroke="#7a4a12" stroke-width="3"/>`;
+  const rope = (x) => 10 + Math.sin((x / w) * Math.PI) * 26;
+  let s = `<svg class="toran-svg" viewBox="0 0 ${w} 190" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="mgO" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffc04a"/><stop offset=".55" stop-color="#f0780c"/><stop offset="1" stop-color="#a83e04"/></radialGradient>
+    <radialGradient id="mgY" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#f6b412"/><stop offset="1" stop-color="#b06d02"/></radialGradient>
+    <linearGradient id="lf" x1="0" x2="1"><stop offset="0" stop-color="#2f5f18"/><stop offset=".5" stop-color="#5d9a2e"/><stop offset="1" stop-color="#2a5214"/></linearGradient>
+    <symbol id="mgo" viewBox="-14 -14 28 28"><circle r="12.5" fill="url(#mgO)"/>${frills('#ffb43a', '#c75406')}<circle r="12.5" fill="url(#shade)"/></symbol>
+    <symbol id="mgy" viewBox="-14 -14 28 28"><circle r="12.5" fill="url(#mgY)"/>${frills('#ffe27a', '#c98a04')}<circle r="12.5" fill="url(#shade)"/></symbol>
+    <radialGradient id="shade" cx=".35" cy=".3" r=".8"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#3a1000" stop-opacity=".45"/></radialGradient>
+    <symbol id="leaf" viewBox="-12 0 24 80"><path d="M0 0 C-11 14 -10 52 0 80 C10 52 11 14 0 0Z" fill="url(#lf)"/>
+      <path d="M0 3 V76" stroke="#c9e29a" stroke-opacity=".55" stroke-width="1"/>
+      <g stroke="#1f3f0e" stroke-opacity=".35" stroke-width=".6" fill="none">${[16, 26, 36, 46, 56].map((y) => `<path d="M0 ${y} L-6 ${y - 7} M0 ${y} L6 ${y - 7}"/>`).join('')}</g>
+      <path d="M-4 10 C-7 24 -6 40 -2 58" stroke="#fff" stroke-opacity=".18" stroke-width="2" fill="none"/></symbol>
+  </defs>
+  <path d="M-10 ${rope(0)} Q${w / 2} ${rope(w / 2) * 2 - 10} ${w + 10} ${rope(w)}" fill="none" stroke="#6b3c10" stroke-width="3.5"/>
+  <path d="M-10 ${rope(0) - 1} Q${w / 2} ${rope(w / 2) * 2 - 11} ${w + 10} ${rope(w) - 1}" fill="none" stroke="#c48a3a" stroke-width="1" stroke-opacity=".6"/>`;
   for (let i = 0; i < n; i++) {
-    const x = i * step; const y = 14 + Math.sin((i / (n - 1)) * Math.PI) * 30 * 0.98;
-    const len = i % 2 ? 70 : 96;
-    s += `<g class="sway" style="transform-origin:${x}px ${y}px;animation-delay:${(i % 4) * -0.7}s">`;
+    const x = i * step; const y = rope(x);
+    s += `<g class="strand" data-x="${x}" data-y="${y}">`;
     if (i % 2) {
-      // mango leaf
-      s += `<path d="M${x} ${y} C${x - 18} ${y + 30} ${x - 12} ${y + len - 10} ${x} ${y + len} C${x + 12} ${y + len - 10} ${x + 18} ${y + 30} ${x} ${y}Z" fill="#4f7a2a"/>
-            <path d="M${x} ${y + 4} L${x} ${y + len - 6}" stroke="#2f4f16" stroke-width="1.5"/>`;
+      // a pair of mango leaves
+      s += `<use href="#leaf" x="${x - 18}" y="${y}" width="24" height="84" transform="rotate(14 ${x} ${y})"/>
+            <use href="#leaf" x="${x - 6}" y="${y}" width="24" height="84" transform="rotate(-10 ${x} ${y})"/>`;
     } else {
-      // marigold string
-      s += `<path d="M${x} ${y} V${y + len}" stroke="#7a4a12" stroke-width="1.5"/>`;
-      for (let k = 0; k < 4; k++) {
-        const cy = y + 18 + k * 20; const c = k % 2 ? '#f4b41a' : '#e8731d';
-        s += `<circle cx="${x}" cy="${cy}" r="10" fill="${c}"/><circle cx="${x}" cy="${cy}" r="10" fill="url(#mg)" opacity=".55"/>`;
-      }
-      s += `<path d="M${x - 5} ${y + len} l5 10 5 -10z" fill="#b3261e"/>`;
+      const len = 4 + (i % 4 === 0 ? 1 : 0);
+      s += `<path d="M${x} ${y} V${y + 10 + len * 22}" stroke="#7a4a12" stroke-width="1.3"/>`;
+      for (let k = 0; k < len; k++) s += `<use href="${k % 2 ? '#mgy' : '#mgo'}" x="${x - 13}" y="${y + 6 + k * 22}" width="26" height="26" transform="rotate(${(k * 47) % 360} ${x} ${y + 19 + k * 22})"/>`;
+      s += `<use href="#leaf" x="${x - 6}" y="${y + 8 + len * 22}" width="12" height="34"/>`;
     }
     s += '</g>';
   }
-  s += `<defs><radialGradient id="mg"><stop offset="0" stop-color="#fff3b0"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#7a3000" stop-opacity=".5"/></radialGradient></defs></svg>`;
-  return s;
+  return s + '</svg>';
+}
+function frills(light, dark) {
+  let o = '';
+  for (let r = 0; r < 3; r++) {
+    const n = 10 + r * 4; const rad = 10 - r * 3.2;
+    for (let k = 0; k < n; k++) {
+      const a = (k / n) * 360 + r * 11;
+      o += `<ellipse cx="0" cy="${-rad}" rx="${3.4 - r * 0.6}" ry="${4.6 - r * 0.8}" fill="${k % 2 ? light : dark}" fill-opacity="${0.75 - r * 0.12}" transform="rotate(${a})"/>`;
+    }
+  }
+  return o + '<circle r="2.4" fill="#8a3a02" fill-opacity=".7"/>';
 }
 
 export function rangoli() {

@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Srinivas Teja weds Srilekha · 10.12.2026</title>
-  <meta name="description" content="బెల్లంకొండ వారి పెళ్లి సందడి — Srinivas Teja weds Srilekha · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta. Knock on the door to enter.">
+  <meta name="description" content="బెల్లంకొండ వారి పెళ్లి సందడి — Srinivas Teja weds Srilekha · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta. Tap the door to enter.">
   <meta property="og:title" content="Srinivas Teja weds Srilekha">
-  <meta property="og:description" content="Knock on the door — you're invited · 10 December 2026 · Jaggaiahpeta">
+  <meta property="og:description" content="Open the door — you're invited · 10 December 2026 · Jaggaiahpeta">
   <meta property="og:image" content="./img/temple-door.jpg">
   <meta name="theme-color" content="#2a0c06">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,10 +35,9 @@
   <div class="intro-top"><p class="te">॥ శ్రీరస్తు · శుభమస్తు · అవిఘ్నమస్తు ॥</p></div>
   <div class="knock-ui" id="knockUi">
     <p class="knock-te te">తలుపు తట్టండి</p>
-    <p class="knock-en">Knock three times to enter</p>
-    <div class="knock-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="knock-en">Tap the door to enter</p>
   </div>
-  <button class="knock-hit" id="knock" aria-label="Knock on the door (three times to open)"></button>
+  <button class="knock-hit" id="knock" aria-label="Tap to open the door"></button>
   <p class="welcome te" id="welcome" aria-live="polite"></p>
 </div>
 
@@ -63,7 +62,7 @@
       <p class="h-venue" data-h>Ukku Kala Vedika · Jaggaiahpeta</p>
       <p class="h-tag te" data-h>రెండు కుటుంబాలు · ఒకే శుభారంభం</p>
     </div>
-    <a class="cue" href="#savedate" aria-label="Scroll down"><i></i><span>Scroll</span></a>
+    <a class="cue" href="#savedate" aria-label="Scroll down"><span>Scroll</span><i></i></a>
   </section>
 
   <!-- ======================= SAVE THE DATE ======================= -->
@@ -71,7 +70,8 @@
     <p class="te kicker" data-r>శుభ ముహూర్తం</p>
     <h2 class="h2" data-r>Save the date</h2>
     <div class="rangoli-wrap" data-rangoli>
-      <div class="rangoli" id="rangoli"></div>
+      <canvas class="rangoli" id="rangoli" aria-hidden="true"></canvas>
+      <div class="rg-diyas" data-rgdiyas></div>
       <div class="rg-date"><span class="rg-d">10</span><span class="rg-m">December</span><span class="rg-y">2026</span></div>
     </div>
     <p class="sd-time" data-r>Thursday · Sumuhurtham <b>8:18 AM</b></p>
@@ -114,14 +114,6 @@
     <p class="te kicker light" data-r>మా కథ</p>
     <h2 class="h2 light" data-r>Our story</h2>
     <ol class="story-line" id="storyLine"></ol>
-  </section>
-
-  <!-- ======================= QUIZ ======================= -->
-  <section class="paper quiz" id="quiz">
-    <p class="te kicker" data-r>ఎంత బాగా తెలుసు?</p>
-    <h2 class="h2" data-r>Pelli Koduku side vs Pelli Kuthuru side</h2>
-    <p class="quiz-sub" data-r>Seven quick questions. Pick your side and prove who knows the couple best.</p>
-    <div class="quiz-box" id="quizBox" data-r></div>
   </section>
 
   <!-- ======================= GALLERY ======================= -->
