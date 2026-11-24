@@ -29,8 +29,18 @@ $('#arches').innerHTML = upcoming.map((e) => {
 }).join('');
 if (done) $('#doneNote').textContent = `${done.name} celebrated on ${done.day.replace(/^\w+, /, '')} — blessed and done.`;
 
-$('#ritTrack').innerHTML = rituals.map((r, i) => `<article class="rit"><p class="n">${String(i + 1).padStart(2, '0')} / ${String(rituals.length).padStart(2, '0')}</p>
+$('#ritGrid').innerHTML = rituals.map((r, i) => `<article class="rit"><div class="pic"><span class="ph">${esc(r[0])}</span><img src="./img/rituals/${esc(r[3])}" alt="${esc(r[1])}" loading="lazy"></div>
+  <p class="n">${String(i + 1).padStart(2, '0')} / ${String(rituals.length).padStart(2, '0')}</p>
   <h3>${esc(r[0])}</h3><p class="en">${esc(r[1])}</p><p>${esc(r[2])}</p></article>`).join('');
+$$('.rit .pic img').forEach((img) => {
+  const ok = () => img.parentElement.classList.add('has-img');
+  if (img.complete) { if (img.naturalWidth) ok(); else img.remove(); } else { img.addEventListener('load', ok); img.addEventListener('error', () => img.remove()); }
+});
+// background images that may not exist yet fall back to an existing one
+$$('img[data-fallback]').forEach((img) => {
+  const swap = () => { const fb = new URL(img.dataset.fallback, location.href).href; if (img.src !== fb) img.src = fb; };
+  if (img.complete && !img.naturalWidth) swap(); else img.addEventListener('error', swap, { once: true });
+});
 $('#phones').innerHTML = phones.map((p, i) => `<a class="btn${i ? '' : ' fill'}" href="tel:+91${p}">${icon.tel}${p.slice(0, 5)} ${p.slice(5)}</a>`).join('');
 
 $$('[data-split]').forEach((el) => {
@@ -95,11 +105,18 @@ const reveal = () => {
   document.body.classList.remove('is-locked');
   startDust();
   ScrollTrigger.refresh();
-  gsap.timeline()
-    .from('#walkStage', { scale: 1.1165, duration: 2.6, ease: 'power2.inOut' }, 0)
+  const t = gsap.timeline();
+  t.from('#sceneStage', { scale: 1.1165, duration: 2.6, ease: 'power2.inOut' }, 0)
     .to(intro, { autoAlpha: 0, duration: 0.45, ease: 'power1.out', onComplete: () => intro.remove() }, 0)
-    .from('.w-fam', { autoAlpha: 0, y: 18, filter: 'blur(8px)', duration: 1.4, ease: 'power2.out' }, 0.6)
-    .from('.w-cue', { autoAlpha: 0, duration: 1 }, 1.4);
+    .to('#sceneStage', { scale: 1.06, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 2.6);
+  if (!reduce) {
+    t.from('.w-fam', { autoAlpha: 0, y: 18, filter: 'blur(8px)', duration: 1.4, ease: 'power2.out' }, 0.8)
+      .from('.w-names .w-nm:first-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.07, duration: 1.2, ease: 'power3.out' }, 1.6)
+      .from('.w-weds', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.2 }, 2.6)
+      .from('.w-names .w-nm:last-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.07, duration: 1.2, ease: 'power3.out' }, 3.0)
+      .from('.w-date', { autoAlpha: 0, y: 20, filter: 'blur(8px)', duration: 1.2 }, 4.0)
+      .from('.w-cue', { autoAlpha: 0, duration: 1 }, 4.8);
+  }
 };
 const openDoors = () => {
   if (opened) return; opened = true;
@@ -117,27 +134,6 @@ const openDoors = () => {
     .to('#doorStage', { scale: 2.45, transformOrigin: '50% 53%', duration: 2.2, ease: 'power3.inOut' }, 3.4);
 };
 $('#enter').addEventListener('click', openDoors);
-
-/* ------------------------------------------------------------ scene 1: the couple walks to the mandir */
-if (!reduce) {
-  const w = gsap.timeline({ defaults: { ease: 'none' },
-    scrollTrigger: { trigger: '#walk', start: 'top top', end: 'bottom bottom', scrub: 1.2 } });
-  w.to('.w-cue', { autoAlpha: 0, duration: 0.6 }, 0)
-    // camera drifts forward
-    .to('.plate', { scale: 1.14, transformOrigin: '50% 48%', duration: 8 }, 0)
-    // the couple walk up the path towards the steps
-    .to('.couple', { yPercent: -68, scale: 0.58, duration: 8, ease: 'sine.inOut' }, 0)
-    .to('.couple img', { y: '-2.2%', rotate: 0.8, duration: 0.4, ease: 'sine.inOut', repeat: 19, yoyo: true }, 0)
-    .to('.sunflare', { scale: 1.3, opacity: 0.9, duration: 8 }, 0)
-    // names appear in the sky
-    .from('.w-names .w-nm:first-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.12, duration: 1.2 }, 1.2)
-    .from('.w-weds', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1 }, 2.6)
-    .from('.w-names .w-nm:last-child .ch', { autoAlpha: 0, y: 40, rotateX: -80, filter: 'blur(10px)', stagger: 0.12, duration: 1.2 }, 3.0)
-    .from('.w-date', { autoAlpha: 0, y: 20, filter: 'blur(8px)', duration: 1 }, 4.6)
-    // hold, then soft fade into the invitation
-    .to('.walk-text', { autoAlpha: 0, y: -30, duration: 1 }, 8.4)
-    .to('.walk-fade', { opacity: 1, duration: 1.4 }, 8.6);
-}
 
 /* ------------------------------------------------------------ scroll reveals */
 if (!reduce) {
@@ -162,14 +158,13 @@ if (!reduce) {
   gsap.fromTo('.m-bg img', { yPercent: -8, scale: 1.12 }, { yPercent: 8, scale: 1, ease: 'none', scrollTrigger: { trigger: '.muhurtham', start: 'top bottom', end: 'bottom top', scrub: true } });
   // arched event cards rise one after another
   gsap.from('.ac', { autoAlpha: 0, y: 80, scale: 0.94, filter: 'blur(8px)', duration: 1.3, stagger: 0.22, ease: 'power3.out', scrollTrigger: st('#arches', 'top 82%') });
-  // rituals slide sideways while pinned
-  const track = $('#ritTrack');
-  const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-  gsap.to(track, { x: () => -dist(), ease: 'none',
-    scrollTrigger: { trigger: '#rituals', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.6, invalidateOnRefresh: true } });
-  // finale: slow push into the mandir
+  // ritual cards rise in, their pictures settle from a slight zoom
+  $$('.rit').forEach((card) => {
+    gsap.from(card, { autoAlpha: 0, y: 70, filter: 'blur(8px)', duration: 1.2, ease: 'power3.out', scrollTrigger: st(card, 'top 90%') });
+    gsap.to(card.querySelector('.pic img'), { scale: 1, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'center center', scrub: true } });
+  });
+  // fade the mandir title out as you leave the first scene
+  gsap.to('.walk-text, .w-cue', { autoAlpha: 0, y: -40, ease: 'none', scrollTrigger: { trigger: '#scene1', start: 'top top', end: 'bottom 30%', scrub: true } });
+  // finale: slow push into the Seetha Rama Kalyanam scene
   gsap.fromTo('.f-bg img', { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.finale', start: 'top bottom', end: 'bottom bottom', scrub: true } });
-} else {
-  const t = $('#ritTrack'); t.style.width = 'auto'; t.style.flexWrap = 'wrap'; t.style.justifyContent = 'center';
-  $('.rituals').style.height = 'auto';
 }

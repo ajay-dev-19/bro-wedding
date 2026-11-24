@@ -50,12 +50,8 @@ img { display: block; }
 
 #dust { position: fixed; inset: 0; z-index: 30; pointer-events: none; }
 
-/* ---------------- scene 1: walk ---------------- */
-.walk { position: relative; height: 340svh; background: #2a1208; }
-.walk-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; }
-.couple { position: absolute; left: 37.5%; top: 61.354%; width: 25.185%; transform-origin: 50% 100%; will-change: transform; }
-.couple img { width: 100%; height: auto; position: relative; }
-.couple .shadow { position: absolute; left: 4%; right: 4%; bottom: -3%; height: 9%; border-radius: 50%; background: radial-gradient(closest-side, rgba(60, 25, 5, .55), transparent); filter: blur(4px); }
+/* ---------------- scene 1: mandir ---------------- */
+.scene1 { position: relative; height: 100svh; overflow: hidden; background: #2a1208; }
 .sunflare { position: absolute; left: 76%; top: 40%; width: 60%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(255, 236, 180, .55), rgba(255, 200, 120, .15) 35%, transparent 65%); mix-blend-mode: screen; }
 .sky-shade { position: absolute; inset: 0 0 auto; height: 55%; background: linear-gradient(rgba(50, 18, 6, .62), rgba(50, 18, 6, .28) 55%, transparent); pointer-events: none; }
@@ -70,7 +66,6 @@ img { display: block; }
 .w-cue i { width: 22px; height: 36px; border: 1.5px solid currentColor; border-radius: 12px; position: relative; }
 .w-cue i::after { content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: currentColor; animation: cue 1.8s infinite; }
 @keyframes cue { to { transform: translateY(12px); opacity: 0; } }
-.walk-fade { position: absolute; inset: 0; background: var(--ivory); opacity: 0; pointer-events: none; }
 
 /* ---------------- ivory sections ---------------- */
 section { position: relative; }
@@ -133,23 +128,23 @@ section { position: relative; }
 .done-note { margin-top: 30px; font-style: italic; color: #7a5a3a; }
 
 /* ---------------- rituals ---------------- */
-.rituals { height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; background: linear-gradient(#f6eddb, #efe1c4); color: var(--ink); text-align: center; }
-.rit-head { padding: 0 26px; }
-.rit-track { display: flex; gap: 18px; padding: 36px 26px 0; width: max-content; }
-.rit { width: min(76vw, 330px); flex: none; padding: 64px 22px 30px; border-radius: 170px 170px 20px 20px; background: #fffdf8; border: 1px solid #e7cf9c; box-shadow: 0 20px 44px rgba(122, 28, 42, .1); }
-.rit .n { font: 500 12px Cinzel, serif; letter-spacing: .25em; color: var(--gold-deep); }
-.rit h3 { margin: 10px 0 0; font: 700 24px 'Noto Serif Telugu', serif; color: var(--maroon); }
-.rit .en { font: 500 13px Cinzel, serif; letter-spacing: .14em; color: var(--gold-deep); margin-top: 4px; }
-.rit p:last-child { font-size: 18px; margin-top: 14px; line-height: 1.55; }
-
-/* ---------------- brother ---------------- */
-.q { font-size: clamp(28px, 8.4vw, 40px); font-weight: 700; line-height: 1.7; color: var(--maroon); margin-top: 16px; }
-.who { font-size: 19px; margin-top: 14px; color: var(--gold-deep); }
+.rituals { background: linear-gradient(#f6eddb, #efe1c4); }
+.rituals > .rit-grid { max-width: 1100px; }
+.rit-grid { display: grid; gap: 26px; margin-top: 44px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); text-align: center; }
+.rit { background: #fffdf8; border: 1px solid #e7cf9c; border-radius: 200px 200px 22px 22px; padding: 12px 12px 26px; box-shadow: 0 22px 46px rgba(122, 28, 42, .1); }
+.rit .pic { position: relative; aspect-ratio: 4 / 5; border-radius: 190px 190px 14px 14px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fff3d6, #e9c98c 70%, #c99a4a); }
+.rit .pic img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
+.rit .pic .ph { position: absolute; inset: 0; display: grid; place-items: center; font: 700 26px 'Noto Serif Telugu', serif; color: rgba(122, 28, 42, .55); padding: 20px; }
+.rit .pic.has-img .ph { display: none; }
+.rit .n { font: 500 12px Cinzel, serif; letter-spacing: .25em; color: var(--gold-deep); margin-top: 18px; }
+.rit h3 { margin: 6px 0 0; font: 700 24px 'Noto Serif Telugu', serif; color: var(--maroon); }
+.rit .en { font: 500 13px Cinzel, serif; letter-spacing: .14em; color: var(--gold-deep); margin-top: 2px; }
+.rit p:last-child { font-size: 18px; margin: 12px auto 0; line-height: 1.55; max-width: 30ch; }
 
 /* ---------------- finale ---------------- */
 .finale { min-height: 100svh; display: grid; align-items: end; overflow: hidden; text-align: center; color: #fff4d6; }
 .f-bg { position: absolute; inset: 0; }
-.f-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.f-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
 .finale::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(rgba(30, 10, 2, .1), rgba(30, 10, 2, .55) 40%, rgba(30, 10, 2, .92)); }
 .f-inner { position: relative; z-index: 2; padding: 34svh 24px max(90px, 12svh); max-width: 560px; margin: 0 auto; }
 .abhi { font-size: 16px; line-height: 2; color: #f3ddb0; }

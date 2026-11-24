@@ -38,14 +38,15 @@ export const events = [
   },
 ];
 
+// Each ritual image lives at public/img/rituals/<file>. Until it exists, a soft gold panel shows instead.
 export const rituals = [
-  ['కన్యాదానం', 'Kanyadanam', 'The bride’s parents place her hand in the groom’s, entrusting him with their most precious gift.'],
-  ['జీలకర్ర – బెల్లం', 'Jeelakarra Bellam', 'Cumin and jaggery placed on each other’s heads at the muhurtham — through bitter and sweet, together.'],
-  ['మాంగళ్య ధారణ', 'Mangalya Dharana', 'The groom ties the sacred mangalasutram, a prayer for a long and blessed life together.'],
-  ['తలంబ్రాలు', 'Talambralu', 'Showers of turmeric rice poured over each other — joy, abundance and a playful start.'],
-  ['బ్రహ్మముడి', 'Brahmamudi', 'Their garments are tied in a sacred knot, a bond the gods are asked to keep steady.'],
-  ['సప్తపది', 'Saptapadi', 'Seven steps around the sacred fire, seven vows for seven lifetimes.'],
-  ['అరుంధతి దర్శనము', 'Arundhati Darshanam', 'The couple are shown the star Arundhati, the eternal symbol of a devoted marriage.'],
+  ['కన్యాదానం', 'Kanyadanam', 'The bride’s parents place her hand in the groom’s, entrusting him with their most precious gift.', '01-kanyadanam.jpg'],
+  ['జీలకర్ర – బెల్లం', 'Jeelakarra Bellam', 'Cumin and jaggery placed on each other’s heads at the muhurtham — through bitter and sweet, together.', '02-jeelakarra-bellam.jpg'],
+  ['మాంగళ్య ధారణ', 'Mangalya Dharana', 'The groom ties the sacred mangalasutram, a prayer for a long and blessed life together.', '03-mangalya-dharana.jpg'],
+  ['తలంబ్రాలు', 'Talambralu', 'Showers of turmeric rice poured over each other — joy, abundance and a playful start.', '04-talambralu.jpg'],
+  ['బ్రహ్మముడి', 'Brahmamudi', 'Their garments are tied in a sacred knot, a bond the gods are asked to keep steady.', '05-brahmamudi.jpg'],
+  ['సప్తపది', 'Saptapadi', 'Seven steps around the sacred fire, seven vows for seven lifetimes.', '06-saptapadi.jpg'],
+  ['అరుంధతి దర్శనము', 'Arundhati Darshanam', 'The couple are shown the star Arundhati, the eternal symbol of a devoted marriage.', '07-arundhati.jpg'],
 ];
 
 export const muhurtham = new Date('2026-12-10T08:18:00+05:30');
