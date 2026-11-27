@@ -109,6 +109,23 @@ html.wm-loading,html.wm-loading body{overflow:hidden}
 @keyframes wm-eq{0%,100%{height:30%}50%{height:100%}}
 .wm-music .ic-off{display:none}
 .wm-music:not(.playing) .bars{display:none}.wm-music:not(.playing) .ic-off{display:block}
+/* ---- RSVP thank-you ---- */
+.rosewood .rw-sheet.is-done>.rw-title,.rosewood .rw-sheet.is-done>.rw-it,.rosewood .rw-sheet.is-done>.rw-form{display:none}
+.rosewood .rw-done{display:grid;justify-items:center;gap:calc(2.6 * var(--u));padding:calc(4 * var(--u)) 0 calc(2 * var(--u));animation:rw-done-in .8s cubic-bezier(.2,.8,.2,1) both}
+.rosewood .rw-done[hidden]{display:none}
+.rosewood .rw-done-ic{width:calc(15 * var(--u));height:calc(15 * var(--u));min-width:54px;min-height:54px;border-radius:50%;display:grid;place-items:center;
+  background:var(--wine);box-shadow:inset 0 0 0 3px var(--wine),inset 0 0 0 4px #ffdcd273,0 8px 18px -8px #52040a99;animation:rw-done-pop .9s cubic-bezier(.3,1.6,.5,1) .15s both}
+.rosewood .rw-done-ic svg{width:46%;height:46%;fill:#fbeee6}
+.rosewood .rw-done-t{font:500 calc(11 * var(--u)) / 1.1 var(--display);color:var(--wine);letter-spacing:-.01em;margin:0}
+.rosewood .rw-done-m{margin:0;max-width:30ch}
+.rosewood .rw-done-sum{margin:calc(1 * var(--u)) 0 0;padding:calc(2 * var(--u)) calc(5 * var(--u));border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  font:500 max(12px, calc(3.2 * var(--u))) / 1.6 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--wine)}
+.rosewood .rw-done-sum:empty{display:none}
+@keyframes rw-done-in{from{opacity:0;transform:translateY(12px)}}
+@keyframes rw-done-pop{from{opacity:0;transform:scale(.4)}}
+html[lang=te] .rosewood .rw-done-t{font-size:calc(9 * var(--u));line-height:1.35}
+html[lang=te] .rosewood .rw-done-sum{text-transform:none;font-size:max(13px, calc(3.4 * var(--u)))}
+
 /* ---- Telugu typography ---- */
 html[lang=te] .rosewood{
   --display:"Cormorant Garamond","Noto Serif Telugu",Georgia,serif;
@@ -250,6 +267,13 @@ html[lang=te] .rosewood .rw-tile small{font-size:max(11px,calc(2.8 * var(--u)))}
         <button type="button" class="rw-link" id="toggleComing" data-i18n="cantMake">Sorry, can’t make it?</button>
         <p class="rw-msg" role="status" id="rsvpMsg" hidden></p>
       </form>
+      <div class="rw-done" id="rsvpDone" role="status" aria-live="polite" hidden>
+        <span class="rw-done-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20.5C5 15 2.5 11.5 2.5 8.2 2.5 5.6 4.6 3.5 7.2 3.5c1.9 0 3.6 1 4.8 2.8 1.2-1.8 2.9-2.8 4.8-2.8 2.6 0 4.7 2.1 4.7 4.7 0 3.3-2.5 6.8-9.5 12.3z"/></svg></span>
+        <h3 class="rw-done-t" id="doneTitle"></h3>
+        <p class="rw-it rw-done-m" id="doneMsg"></p>
+        <p class="rw-done-sum" id="doneSum"></p>
+        <button type="button" class="rw-link" id="rsvpAgain"></button>
+      </div>
     </div>
   </div>
 </section>
@@ -293,7 +317,10 @@ const T = {
     errName:"Add your name first.", errGuests:"Number of guests should be between 1 and 12.",
     errEvents:"Pick at least one event you’ll attend.", sending:"Sending…", errSend:"Couldn’t send. Check your connection and try again.",
     okYes:n=>`Yay, see you there, ${n}!`, okNo:n=>`We’ll miss you, ${n}. Thank you for letting us know.`,
-    mono:"S & S", openInv:"Tap to open the invitation"
+    mono:"S & S", openInv:"Tap to open the invitation",
+    doneYesT:n=>`Thank you, ${n}!`, doneYesM:"We can’t wait to celebrate with you.",
+    doneNoT:n=>`Thank you, ${n}`, doneNoM:"We’ll miss you. Thank you for letting us know.",
+    guestsN:n=>`${n} ${n==1?"guest":"guests"}`, again:"Send another response"
   },
   te: {
     couple:"శ్రీలేఖ మరియు శ్రీనివాస్ తేజ", rsvp:"హాజరు", together:"మా కుటుంబాలతో కలిసి",
@@ -325,7 +352,10 @@ const T = {
     errName:"ముందుగా మీ పేరు రాయండి.", errGuests:"అతిథుల సంఖ్య 1 నుండి 12 మధ్య ఉండాలి.",
     errEvents:"కనీసం ఒక వేడుకను ఎంచుకోండి.", sending:"పంపుతోంది…", errSend:"పంపలేకపోయాం. ఇంటర్నెట్ చూసి మళ్లీ ప్రయత్నించండి.",
     okYes:n=>`తప్పకుండా కలుద్దాం, ${n}!`, okNo:n=>`మిమ్మల్ని మిస్ అవుతాం, ${n}. తెలియజేసినందుకు ధన్యవాదాలు.`,
-    mono:"శ్రీ & శ్రీ", openInv:"ఆహ్వానాన్ని తెరవడానికి నొక్కండి"
+    mono:"శ్రీ & శ్రీ", openInv:"ఆహ్వానాన్ని తెరవడానికి నొక్కండి",
+    doneYesT:n=>`ధన్యవాదాలు, ${n}!`, doneYesM:"మీతో కలిసి వేడుక జరుపుకోవడానికి ఎదురుచూస్తున్నాం.",
+    doneNoT:n=>`ధన్యవాదాలు, ${n}`, doneNoM:"మిమ్మల్ని మిస్ అవుతాం. తెలియజేసినందుకు ధన్యవాదాలు.",
+    guestsN:n=>`${n} మంది`, again:"మరో స్పందన పంపండి"
   }
 };
 /* ===== Google Sheet for RSVPs: paste your Apps Script web app URL here (see google-sheet-rsvp.md) ===== */
@@ -345,7 +375,8 @@ function applyLang(l){
   root.style.setProperty("--mono", JSON.stringify(t.mono));
   document.querySelectorAll(".wm-lang button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.lang===l));
   setComing(coming, true);
-  if (done) document.getElementById("cd2").textContent = t.cd2Done;
+  if (typeof renderDone === "function") renderDone();
+  if (cdDone) document.getElementById("cd2").textContent = t.cd2Done;
   try{ localStorage.setItem("wm-lang", l); }catch(e){}
 }
 document.querySelectorAll(".wm-lang button").forEach(b=>b.addEventListener("click",()=>applyLang(b.dataset.lang)));
@@ -396,7 +427,7 @@ function startReveal(){
 }
 
 /* ================= Countdown (digits re-animate when they change) ================= */
-let done = false;
+let cdDone = false;
 const pad = n=>String(n).padStart(2,"0");
 function setDigits(id, str){
   const b = document.getElementById(id);
@@ -414,7 +445,7 @@ function tick(){
   setDigits("cd-h", pad(Math.floor(s%86400/3600)));
   setDigits("cd-m", pad(Math.floor(s%3600/60)));
   setDigits("cd-s", pad(Math.floor(s%60)));
-  if (diff <= 0 && !done){ done = true; document.getElementById("cd2").textContent = T[lang].cd2Done; }
+  if (diff <= 0 && !cdDone){ cdDone = true; document.getElementById("cd2").textContent = T[lang].cd2Done; }
 }
 tick(); setInterval(tick, 1000);
 
@@ -496,11 +527,35 @@ form.addEventListener("submit", async e=>{
       await fetch(SHEET_URL, {method:"POST", mode:"no-cors", body});
     }
   }catch(err){ sending = false; setComing(coming, true); note(t.errSend, true); return; }
-  sending = false; setComing(coming, true);
-  const first = name.value.trim().split(" ")[0];
-  note(coming ? t.okYes(first) : t.okNo(first));
-  form.reset();
+  sending = false;
+  lastRsvp = {name: name.value.trim().split(" ")[0], coming, count, events};
+  try{ localStorage.setItem("wm-rsvp", JSON.stringify(lastRsvp)); }catch(err){}
+  form.reset(); setComing(true);
+  showDone(true);
 });
+
+/* thank-you card after sending (also shown again if the guest comes back later) */
+let lastRsvp = null;
+try{ lastRsvp = JSON.parse(localStorage.getItem("wm-rsvp") || "null"); }catch(e){}
+const sheet = form.closest(".rw-sheet"), doneBox = document.getElementById("rsvpDone");
+const EV_KEY = {Haldi:"haldi", Wedding:"wedding", Vratham:"vratham"};
+function renderDone(){
+  if(!lastRsvp) return; const t = T[lang], r = lastRsvp;
+  document.getElementById("doneTitle").textContent = r.coming ? t.doneYesT(r.name) : t.doneNoT(r.name);
+  document.getElementById("doneMsg").textContent = r.coming ? t.doneYesM : t.doneNoM;
+  document.getElementById("doneSum").textContent = r.coming ? [t.guestsN(r.count), r.events.map(e=>t[EV_KEY[e]]||e).join(" · ")].join("  ·  ") : "";
+  document.getElementById("rsvpAgain").textContent = t.again;
+}
+function showDone(scroll){
+  if(!lastRsvp) return; renderDone();
+  sheet.classList.add("is-done"); doneBox.hidden = false; note("");
+  if(scroll){ const y = window.scrollY + sheet.getBoundingClientRect().top - 90; lenis ? lenis.scrollTo(y) : window.scrollTo({top:y, behavior:"smooth"}); }
+}
+document.getElementById("rsvpAgain").addEventListener("click", ()=>{
+  doneBox.hidden = true; sheet.classList.remove("is-done"); setComing(true);
+  setTimeout(()=>form.elements.name.focus({preventScroll:true}), 50);
+});
+if (lastRsvp) showDone(false);
 
 /* ================= start ================= */
 let saved = "en"; try{ saved = localStorage.getItem("wm-lang") || (navigator.language||"").startsWith("te") && "te" || "en"; }catch(e){}
