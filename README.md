@@ -1,22 +1,46 @@
-# Srinivas Teja weds Srilekha — wedding invite website
+# Srilekha & Srinivas Teja — wedding invite
 
-బెల్లంకొండ వారి పెళ్లి సందడి · 10 December 2026 · Ukku Kala Vedika, Jaggaiahpeta
+10 December 2026 · 8:18 AM · Ukku Kala Vedika, Jaggaiahpeta
+Live: https://ajay-dev-19.github.io/bro-wedding/
 
-## Flow
-1. Tap the temple door — it opens onto the mandir and flows into the hero
-2. Scroll: the couple walk up the path to the mandir while the names appear in the sky
-3. Names, shubhalekha, muhurtham countdown, events timeline, rituals, brother's note, hosts
+A plain static site, with no build step:
 
-## Edit content
-All text, times and venues are in `src/data.js` and `index.html`.
-Images live in `public/img/`. Background music: add `public/audio/music.mp3`.
+- `index.html`: the whole invite (text, styles, animations, English/Telugu switch)
+- `rosewood/`: images
+- `lenis.min.js`: smooth scrolling on laptops
 
-## Run
-```bash
-npm install
-npm run dev      # local preview
-npm run build    # production build in dist/
+Pushing to `main` publishes it to GitHub Pages automatically.
+
+## Editing text
+All English and Telugu wording is in the `T = { en: {...}, te: {...} }` block near the bottom of `index.html`.
+The countdown target is `WEDDING_AT`.
+
+## Preview locally
+Open `index.html` in a browser, or run `python3 -m http.server` in this folder and visit http://localhost:8000.
+
+## RSVPs → Google Sheet
+
+1. Create a new Google Sheet (e.g. "Srinivas Teja wedding RSVPs").
+2. In the sheet: **Extensions → Apps Script**. Delete what's there and paste this:
+
+```js
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Time", "Name", "Attending", "Guests", "Events", "Language"]);
+  }
+  const p = e.parameter;
+  sheet.appendRow([new Date(), p.name, p.attending, Number(p.guests) || 0, p.events, p.language]);
+  return ContentService.createTextOutput("ok");
+}
 ```
-Pushing to `main` deploys to GitHub Pages (Settings → Pages → Source: GitHub Actions).
 
-Built with Vite + GSAP (ScrollTrigger).
+3. Click **Deploy → New deployment** → type **Web app**.
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+4. Click **Deploy**, allow the permissions, and copy the **Web app URL**
+   (looks like `https://script.google.com/macros/s/AKfy.../exec`).
+5. Open `index.html`, find `const SHEET_URL = "";` and paste the URL between the quotes.
+6. Commit and push. Every RSVP now lands as a new row.
+
+If you later edit the script, use **Deploy → Manage deployments → Edit → New version** so the same URL keeps working.
