@@ -16,7 +16,7 @@ All English and Telugu wording is in the `T = { en: {...}, te: {...} }` block ne
 The countdown target is `WEDDING_AT`.
 
 ## Background music
-Add the song as `music/rangulu-ranguley.mp3` and push. A mute button and volume slider then appear in the bottom-right corner.
+The song is `music/rangulu-ranguley.mp3`. A round play/mute button sits in the bottom-right corner.
 Browsers block sound until the guest touches the page, so the music starts on their first tap. The button stays hidden until the file is there.
 
 ## Preview locally
