@@ -73,6 +73,19 @@ html.lenis,html.lenis body{height:auto}
 .wm-load-bar i{display:block;height:100%;width:100%;background:#72080f;transform-origin:left;transform:scaleX(var(--p,0));transition:transform .4s ease}
 @keyframes wm-breathe{50%{transform:scale(1.04)}}
 html.wm-loading,html.wm-loading body{overflow:hidden}
+.wm-load-bar{transition:opacity .4s}
+.wm-load-seal span.te{font:500 22px/1 "Noto Serif Telugu",serif;margin-top:-4%}
+.wm-load.ready .wm-load-bar{opacity:0}
+.wm-load.ready{cursor:pointer}
+.wm-load-open{position:absolute;left:50%;top:calc(100% - 6px);translate:-50% 0;white-space:nowrap;border:0;background:none;padding:12px 18px;
+  font:500 13px/1.4 "Cormorant Garamond","Noto Serif Telugu",serif;letter-spacing:.24em;text-transform:uppercase;color:#72080f;
+  opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+.wm-load-open[lang=te]{letter-spacing:.02em;font-size:15px;text-transform:none}
+.wm-load-open:focus{outline:none}.wm-load-open:focus-visible{outline:1px solid #72080f66;outline-offset:4px;border-radius:4px}
+.wm-load-open i{display:block;width:34px;height:1px;margin:8px auto 0;background:#72080f66}
+.wm-load.ready .wm-load-open{opacity:1;transform:none;pointer-events:auto;animation:wm-nudge 2.4s ease-in-out 1s infinite}
+@keyframes wm-nudge{50%{transform:translateY(3px)}}
+.wm-load.ready .wm-load-seal{animation:wm-breathe 2.4s ease-in-out infinite;filter:drop-shadow(0 10px 18px #5a1e1e59)}
 
 /* ---- language switch ---- */
 .wm-lang{position:fixed;z-index:60;top:calc(12px + env(safe-area-inset-top,0px));right:12px;display:flex;padding:3px;border-radius:999px;
@@ -121,8 +134,8 @@ html[lang=te] .rosewood .rw-tile small{font-size:max(11px,calc(2.8 * var(--u)))}
 </style>
 </head>
 <body>
-<div class="wm-load" id="wmLoad" aria-hidden="true"><div class="wm-load-in"><div class="wm-load-seal"><span id="wmLoadMono">S &amp; S</span></div><div class="wm-load-bar"><i id="wmLoadBar"></i></div></div></div>
-<script>document.documentElement.classList.add("wm-loading");try{if(localStorage.getItem("wm-lang")==="te")document.getElementById("wmLoadMono").textContent="శ్రీ & శ్రీ"}catch(e){}</script>
+<div class="wm-load" id="wmLoad" aria-hidden="true"><div class="wm-load-in"><div class="wm-load-seal"><span id="wmLoadMono">S &amp; S</span></div><div class="wm-load-bar"><i id="wmLoadBar"></i></div><button type="button" class="wm-load-open" id="wmOpen" tabindex="-1">Tap to open the invitation<i></i></button></div></div>
+<script>document.documentElement.classList.add("wm-loading");try{if(localStorage.getItem("wm-lang")==="te"){const m=document.getElementById("wmLoadMono");m.textContent="శ్రీ & శ్రీ";m.classList.add("te")}}catch(e){}</script>
 <div class="wm-lang" role="group" aria-label="Language">
   <button type="button" data-lang="en" aria-pressed="true">EN</button>
   <button type="button" data-lang="te" aria-pressed="false">తెలుగు</button>
@@ -280,7 +293,7 @@ const T = {
     errName:"Add your name first.", errGuests:"Number of guests should be between 1 and 12.",
     errEvents:"Pick at least one event you’ll attend.", sending:"Sending…", errSend:"Couldn’t send. Check your connection and try again.",
     okYes:n=>`Yay, see you there, ${n}!`, okNo:n=>`We’ll miss you, ${n}. Thank you for letting us know.`,
-    mono:"S & S"
+    mono:"S & S", openInv:"Tap to open the invitation"
   },
   te: {
     couple:"శ్రీలేఖ మరియు శ్రీనివాస్ తేజ", rsvp:"హాజరు", together:"మా కుటుంబాలతో కలిసి",
@@ -312,7 +325,7 @@ const T = {
     errName:"ముందుగా మీ పేరు రాయండి.", errGuests:"అతిథుల సంఖ్య 1 నుండి 12 మధ్య ఉండాలి.",
     errEvents:"కనీసం ఒక వేడుకను ఎంచుకోండి.", sending:"పంపుతోంది…", errSend:"పంపలేకపోయాం. ఇంటర్నెట్ చూసి మళ్లీ ప్రయత్నించండి.",
     okYes:n=>`తప్పకుండా కలుద్దాం, ${n}!`, okNo:n=>`మిమ్మల్ని మిస్ అవుతాం, ${n}. తెలియజేసినందుకు ధన్యవాదాలు.`,
-    mono:"శ్రీ & శ్రీ"
+    mono:"శ్రీ & శ్రీ", openInv:"ఆహ్వానాన్ని తెరవడానికి నొక్కండి"
   }
 };
 /* ===== Google Sheet for RSVPs: paste your Apps Script web app URL here (see google-sheet-rsvp.md) ===== */
@@ -519,7 +532,16 @@ const music = (function(){
   audio.addEventListener("canplay", ()=>{ available = true; }, {once:true});
   audio.addEventListener("error", ()=>{ available = false; box.remove(); }, {once:true});
   paint();
-  return { start(){ audio.preload = "auto"; audio.src = audio.dataset.src; audio.load(); if (available) { box.classList.add("ready"); play(); } else audio.addEventListener("canplay", ()=>{ box.classList.add("ready"); play(); }, {once:true}); } };
+  const preload = ()=>{ if (audio.getAttribute("src")) return; audio.preload = "auto"; audio.src = audio.dataset.src; audio.load(); };
+  return {
+    preload,
+    // called directly inside the guest's tap, so the browser allows sound
+    open(){ preload(); if (!box.isConnected) return; box.classList.add("ready");
+      if (!wantOn || !audio.paused) return;
+      audio.muted = false; audio.volume = 0;
+      const p = audio.play(); if (p) p.then(()=>{ available = true; fadeTo(target(), 1800); paint(); }).catch(()=>{});
+    }
+  };
 })();
 
 /* ================= Loading: show the invite only when it is ready ================= */
@@ -542,17 +564,28 @@ const music = (function(){
   const minShow = new Promise(r=>setTimeout(r, 900));
   Promise.race([ Promise.all([all, minShow]), new Promise(r=>setTimeout(r, 6000)) ]).then(()=>{
     bar.style.setProperty("--p", 1);
-    setTimeout(()=>{
+    music.preload();   // start buffering the song while the guest looks at the seal
+    const openBtn = document.getElementById("wmOpen");
+    openBtn.textContent = T[lang].openInv; openBtn.appendChild(document.createElement("i"));
+    openBtn.setAttribute("lang", lang); openBtn.tabIndex = 0;
+    loader.removeAttribute("aria-hidden"); loader.setAttribute("role", "button"); loader.setAttribute("aria-label", T[lang].openInv);
+    setTimeout(()=>loader.classList.add("ready"), 250);
+    let opened = false;
+    const open = ev=>{
+      if (opened) return; opened = true;
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      music.open();
       window.scrollTo(0,0); if (lenis) { lenis.start(); lenis.scrollTo(0, {immediate:true}); }
       startReveal();
       loadRest();
-      music.start();
       document.documentElement.classList.remove("wm-loading");
       loader.classList.add("done");
       setTimeout(()=>loader.remove(), 900);
       // warm up the other language's fonts so switching is instant
       if (document.fonts) ['400 1em "Noto Serif Telugu"','500 1em "Noto Serif Telugu"','600 1em "Noto Serif Telugu"','400 1em "Suravaram"'].forEach(f=>document.fonts.load(f, "శ్రీ").catch(()=>{}));
-    }, 250);
+    };
+    loader.addEventListener("click", open);
+    loader.addEventListener("keydown", e=>{ if (e.key==="Enter" || e.key===" ") open(e); });
   });
 })();
 </script>
