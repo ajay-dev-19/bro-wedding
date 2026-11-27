@@ -96,8 +96,6 @@ html.wm-loading,html.wm-loading body{overflow:hidden}
 @keyframes wm-eq{0%,100%{height:30%}50%{height:100%}}
 .wm-music .ic-off{display:none}
 .wm-music:not(.playing) .bars{display:none}.wm-music:not(.playing) .ic-off{display:block}
-  background:linear-gradient(#72080f,#72080f) 0/var(--v,60%) 100% no-repeat,#72080f33}
-@media (max-width:420px){
 /* ---- Telugu typography ---- */
 html[lang=te] .rosewood{
   --display:"Cormorant Garamond","Noto Serif Telugu",Georgia,serif;
@@ -112,8 +110,13 @@ html[lang=te] .rosewood .rw-tb{line-height:1.5;font-size:calc(9 * var(--u))}
 html[lang=te] .rosewood .rw-title.rw-one .rw-ta{font-size:calc(9 * var(--u))}
 html[lang=te] .rosewood .rw-ev-body h3{font-size:calc(6 * var(--u));line-height:1.45;overflow-wrap:normal}
 html[lang=te] .rosewood *{letter-spacing:normal!important}
+.rosewood .rw-checks{min-width:0;min-inline-size:0;max-width:100%}
+.rosewood .rw-check{min-width:0}
 html[lang=te] .rosewood .rw-checks{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+html[lang=te] .rosewood .rw-title:not(.rw-stack) .rw-tb{font-size:min(calc(7 * var(--u)),9vw);white-space:normal;max-width:100%;text-align:center}
 html[lang=te] .rosewood .rw-check span{white-space:normal;line-height:1.35;padding-block:6px}
+html[lang=te] .rosewood .rw-check:last-of-type:nth-of-type(odd){grid-column:1/-1}
+html[lang=te] .rosewood .rw-check span{overflow:visible;text-overflow:clip}
 html[lang=te] .rosewood .rw-tile small{font-size:max(11px,calc(2.8 * var(--u)))}
 </style>
 </head>
