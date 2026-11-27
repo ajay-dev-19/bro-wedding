@@ -82,6 +82,27 @@ html.wm-loading,html.wm-loading body{overflow:hidden}
 .wm-lang button[data-lang=te]{letter-spacing:0;font-family:"Noto Serif Telugu",serif;font-size:12.5px}
 .wm-lang button[aria-pressed=true]{background:#72080f;color:#fbeee6}
 
+/* ---- music player ---- */
+.wm-music{position:fixed;z-index:60;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;
+  padding:5px;border-radius:999px;background:rgba(251,238,230,.9);box-shadow:inset 0 0 0 1px #72080f6b,0 8px 22px -10px #52040a99;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;translate:0 12px;pointer-events:none;transition:opacity .6s,translate .6s}
+.wm-music.ready{opacity:1;translate:0 0;pointer-events:auto}
+.wm-music button{width:40px;height:40px;border:0;border-radius:50%;background:#72080f;color:#fbeee6;display:grid;place-items:center;padding:0;
+  box-shadow:inset 0 0 0 2px #72080f,inset 0 0 0 3px #ffdcd273}
+.wm-music svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wm-music .bars{display:flex;align-items:flex-end;gap:2px;height:14px}
+.wm-music .bars i{width:3px;height:30%;background:currentColor;border-radius:2px}
+.wm-music.playing .bars i{animation:wm-eq 1s ease-in-out infinite}
+.wm-music.playing .bars i:nth-child(2){animation-delay:-.4s}.wm-music.playing .bars i:nth-child(3){animation-delay:-.7s}
+@keyframes wm-eq{0%,100%{height:30%}50%{height:100%}}
+.wm-music .ic-off{display:none}
+.wm-music:not(.playing) .bars{display:none}.wm-music:not(.playing) .ic-off{display:block}
+.wm-music input[type=range]{-webkit-appearance:none;appearance:none;width:84px;height:3px;margin:0 8px 0 2px;border-radius:3px;cursor:pointer;
+  background:linear-gradient(#72080f,#72080f) 0/var(--v,60%) 100% no-repeat,#72080f33}
+.wm-music input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#72080f;border:2px solid #fbeee6;box-shadow:0 1px 3px #52040a66}
+.wm-music input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#72080f;border:2px solid #fbeee6}
+@media (max-width:420px){.wm-music input[type=range]{width:64px}}
+
 /* ---- Telugu typography ---- */
 html[lang=te] .rosewood{
   --display:"Cormorant Garamond","Noto Serif Telugu",Georgia,serif;
@@ -108,6 +129,15 @@ html[lang=te] .rosewood .rw-tile small{font-size:max(11px,calc(2.8 * var(--u)))}
   <button type="button" data-lang="en" aria-pressed="true">EN</button>
   <button type="button" data-lang="te" aria-pressed="false">తెలుగు</button>
 </div>
+
+<div class="wm-music" id="wmMusic" role="group" aria-label="Music">
+  <button type="button" id="wmPlay" aria-label="Mute music" aria-pressed="false">
+    <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    <svg class="ic-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5m0-5-5 5"/></svg>
+  </button>
+  <input type="range" id="wmVol" min="0" max="100" value="60" aria-label="Volume">
+</div>
+<audio id="wmAudio" data-src="music/rangulu-ranguley.mp3" preload="none" loop playsinline></audio>
 
 <div class="rosewood" id="rw" style="--ground:#F6E2DE;--mono:&quot;S &amp; S&quot;;">
 <div class="rw-fx" aria-hidden="true"><i style="--x:6%;--w:0s;--t:17s;--s:13px"></i><i style="--x:22%;--w:-6s;--t:21s;--s:10px"></i><i style="--x:41%;--w:-11s;--t:19s;--s:12px"></i><i style="--x:63%;--w:-3s;--t:23s;--s:9px"></i><i style="--x:79%;--w:-9s;--t:18s;--s:14px"></i><i style="--x:92%;--w:-14s;--t:22s;--s:11px"></i></div>
@@ -466,6 +496,38 @@ form.addEventListener("submit", async e=>{
 let saved = "en"; try{ saved = localStorage.getItem("wm-lang") || (navigator.language||"").startsWith("te") && "te" || "en"; }catch(e){}
 applyLang(saved);
 
+/* ================= Background music (bottom-right) ================= */
+const music = (function(){
+  const box = document.getElementById("wmMusic"), btn = document.getElementById("wmPlay"), vol = document.getElementById("wmVol"), audio = document.getElementById("wmAudio");
+  let available = false, wantOn = true, fadeT = 0;
+  try{ if (localStorage.getItem("wm-music") === "off") wantOn = false; const v = localStorage.getItem("wm-vol"); if (v !== null) vol.value = v; }catch(e){}
+  const target = ()=> vol.value/100;
+  const paint = ()=>{ vol.style.setProperty("--v", vol.value + "%"); const on = !audio.paused && !audio.muted;
+    box.classList.toggle("playing", on); btn.setAttribute("aria-pressed", String(!on)); btn.setAttribute("aria-label", on ? "Mute music" : "Play music"); };
+  const fadeTo = (to, ms, done)=>{ clearInterval(fadeT); const from = audio.volume, t0 = performance.now();
+    fadeT = setInterval(()=>{ const k = Math.min(1, (performance.now()-t0)/ms); audio.volume = from + (to-from)*k; if (k===1){ clearInterval(fadeT); done && done(); } }, 30); };
+  const play = ()=>{ if (!available || !wantOn) return; audio.muted = false; if (!audio.paused) return;
+    audio.volume = 0; audio.play().then(()=>{ fadeTo(target(), 1500); paint(); }).catch(()=>{}); };
+  // browsers only allow sound after the guest touches the page, so start on the first tap/click/key
+  const unlock = ()=>{ play(); if (!audio.paused) ["pointerdown","keydown","touchend"].forEach(e=>removeEventListener(e, unlock, true)); };
+  ["pointerdown","keydown","touchend"].forEach(e=>addEventListener(e, unlock, true));
+  btn.addEventListener("click", ev=>{ ev.stopPropagation();
+    if (audio.paused || audio.muted){ wantOn = true; play(); }
+    else { wantOn = false; fadeTo(0, 400, ()=>{ audio.pause(); paint(); }); }
+    try{ localStorage.setItem("wm-music", wantOn ? "on" : "off"); }catch(e){} paint(); });
+  vol.addEventListener("input", ()=>{ clearInterval(fadeT); audio.volume = target(); if (vol.value > 0 && (audio.paused || audio.muted) && wantOn) play(); paint();
+    try{ localStorage.setItem("wm-vol", vol.value); }catch(e){} });
+  ["pointerdown","touchend"].forEach(e=>vol.addEventListener(e, ev=>ev.stopPropagation()));
+  audio.addEventListener("play", paint); audio.addEventListener("pause", paint);
+  // pause when the guest switches away, resume when they come back
+  document.addEventListener("visibilitychange", ()=>{ if (!available) return; if (document.hidden) audio.pause(); else if (wantOn) play(); });
+  // the player only shows up if the song file is actually there
+  audio.addEventListener("canplay", ()=>{ available = true; }, {once:true});
+  audio.addEventListener("error", ()=>{ available = false; box.remove(); }, {once:true});
+  paint();
+  return { start(){ audio.preload = "auto"; audio.src = audio.dataset.src; audio.load(); if (available) { box.classList.add("ready"); play(); } else audio.addEventListener("canplay", ()=>{ box.classList.add("ready"); play(); }, {once:true}); } };
+})();
+
 /* ================= Loading: show the invite only when it is ready ================= */
 (function(){
   const loader = document.getElementById("wmLoad"), bar = document.getElementById("wmLoadBar");
@@ -490,6 +552,7 @@ applyLang(saved);
       window.scrollTo(0,0); if (lenis) { lenis.start(); lenis.scrollTo(0, {immediate:true}); }
       startReveal();
       loadRest();
+      music.start();
       document.documentElement.classList.remove("wm-loading");
       loader.classList.add("done");
       setTimeout(()=>loader.remove(), 900);

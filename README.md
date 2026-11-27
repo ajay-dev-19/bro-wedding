@@ -15,6 +15,10 @@ Pushing to `main` publishes it to GitHub Pages automatically.
 All English and Telugu wording is in the `T = { en: {...}, te: {...} }` block near the bottom of `index.html`.
 The countdown target is `WEDDING_AT`.
 
+## Background music
+Add the song as `music/rangulu-ranguley.mp3` and push. A mute button and volume slider then appear in the bottom-right corner.
+Browsers block sound until the guest touches the page, so the music starts on their first tap. The button stays hidden until the file is there.
+
 ## Preview locally
 Open `index.html` in a browser, or run `python3 -m http.server` in this folder and visit http://localhost:8000.
 

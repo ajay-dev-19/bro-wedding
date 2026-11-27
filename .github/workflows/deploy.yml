@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Collect site files
-        run: mkdir _site && cp -r index.html lenis.min.js rosewood _site/
+        run: mkdir _site && cp -r index.html lenis.min.js rosewood _site/ && if [ -d music ]; then cp -r music _site/; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
